@@ -1,0 +1,40 @@
+{% extends 'admin/base_site.html' %}
+{% block content %}
+<form method='POST'>
+    {% csrf_token %}
+    {{form.TenSanPham}}
+    <p>
+        <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names..">
+    </p>
+    <div id='myDiv'>
+         {{form.CongDoan}}   
+    <div>
+    <button type=submit>Add</button>
+    
+</form>
+
+{% for sanpham in tatcasanpham %}
+<p> Ten San Pham: {{sanpham.TenSanPham}} <p>
+<p>Cong Doan: {{ sanpham.CongDoan.all|join:", " }} <p>
+{% endfor %}
+
+<script>
+function myFunction() {
+  // Declare variables
+  var input, filter, div, tr, td, i, txtValue;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase();
+  div = document.getElementById("myDiv");
+  option = div.getElementsByTagName("option");
+  for (i = 0; i < option.length; i++) {
+    txtValue = option[i].textContent || option[i].innerText;
+    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+      option[i].style.display = "";
+    } else {
+      option[i].style.display = "none";
+    }
+  }
+}
+</script>
+{% endblock %}
+
