@@ -1,2 +1,1 @@
-web: gunicorn blogfbv.wsgi --log-file -
-
+web: gunicorn qlmm.wsgi --log-file -
