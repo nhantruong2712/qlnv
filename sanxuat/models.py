@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models.base import Model
 from django.db.models.deletion import CASCADE
-from django.db.models.enums import Choices
+from django.contrib.auth.models import User
 from cauhinh.models import thietbi, bactho, chucvu
 
 
@@ -41,17 +41,20 @@ class NhanVien(models.Model):
         ('TN','TẠM NGHỈ'),
         ('NV','NGHỈ VIỆC'),
     )
-    TenNhanVien = models.TextField(verbose_name='Tên Nhân Viên')
+    User = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    TenNhanVien = models.CharField(max_length=255, verbose_name='Tên Nhân Viên', null=True)
     BacTho = models.ForeignKey(bactho, on_delete=CASCADE, verbose_name='Bậc Thợ', null = True, blank=True)
-    SoDienThoai = models.TextField(verbose_name='Số Điện Thoại', null = True, blank=True)
+    SoDienThoai = models.IntegerField(verbose_name='Số Điện Thoại', null = True, blank=True)
     NgaySinh = models.DateField(verbose_name='Ngày Sinh', null = True, blank=True)
-    DiaChi = models.DecimalField(max_digits=10, decimal_places=0, verbose_name='Đại Chỉ')
+    DiaChi = models.DecimalField(max_digits=10, decimal_places=0, verbose_name='Đại Chỉ', null=True)
     ChucDanh = models.ForeignKey(chucvu, on_delete=CASCADE, verbose_name='Chức Danh', null = True, blank=True)
     MayUT1 = models.ForeignKey(thietbi, on_delete=CASCADE, verbose_name='Ưu Tiên 1', null = True, blank=True)
     TenChuyen = models.ForeignKey(Chuyen, on_delete=CASCADE, verbose_name='Thuộc Chuyền', null = True, blank=True)
     TinhTrang = models.CharField(max_length=20, choices=TINHTRANG_CHOICES)
+
     def __str__(self):
-        return self.TenNhanVien
+        return self.TenNhanVien if self.TenNhanVien else self.User.username
+
 
 class SanPham(models.Model):
     class Meta:

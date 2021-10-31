@@ -20,6 +20,9 @@ class GanCongDoan(models.Model):
     def get_absolute_url(self):
         return reverse("quytrinhsanxuat:tao-san-pham")
 
+    class Meta:
+        verbose_name_plural = 'Gán Công Đoạn'
+
     def __str__(self):
         return str(self.TenSanPham) + " " + str(self.CongDoan)
 
@@ -27,6 +30,7 @@ class GanCongDoan(models.Model):
 class ChiaCongDoan(GanCongDoan):
     class Meta:
         proxy = True
+        verbose_name_plural = 'Chia Công Đoạn'
 
     def __str__(self):
         return f"Chia cong doan {self.TenSanPham}"
@@ -91,6 +95,7 @@ class SoLuongLam(models.Model):
     SoLuongToiThieu = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     LuongNgayToiThieu = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     SoLuongDatTiepTheo = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    LuongKhiDatSoTiepTheo = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     KichCauDeTangLuong = models.DecimalField(max_digits=10, decimal_places=2, null=True)
 
     def __str__(self):

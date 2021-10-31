@@ -120,7 +120,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Ho_Chi_Minh'
 
 USE_I18N = True
 
@@ -149,3 +149,5 @@ SECURE_HSTS_PRELOAD = True
 BASE_URL = "qlynhanvien.herokuapp.com"
 ALLOWED_HOSTS = ['qlynhanvien.herokuapp.com', 'www.qlynhanvien.herokuapp.com']
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# ALLOWED_HOSTS = ['*']

@@ -53,7 +53,7 @@ class NhanVienInline(admin.TabularInline):
     model = SoLuongLam
     extra = 0
     fields = ['NhanVien', 'TongThoiGianCuaNhanVien', 'GiaCongDoan', 'LuongNgay', 'SoLuongToiThieu', 'LuongNgayToiThieu',
-              'SoLuongDatTiepTheo', 'KichCauDeTangLuong']
+              'SoLuongDatTiepTheo', 'LuongKhiDatSoTiepTheo', 'KichCauDeTangLuong']
     # readonly_fields = ('CongDoan', 'BacTho', 'ThoiGian', 'ThietBi', 'TongThoiGian', 'Bac', 'May')
 
     def has_delete_permission(self, request, obj=None):

@@ -1,9 +1,12 @@
 from django.db.models.signals import m2m_changed, post_save, pre_save
 from django.dispatch import receiver
 
+from . import constants
 from .models import GanCongDoan, CongDoan, Gan, ChiaCongDoan, SoLuongLam
 from .utils import AssignTask
 from sanxuat.models import NhanVien, SanPham
+from decimal import Decimal
+from django.contrib.auth.models import User
 
 
 @receiver(m2m_changed, sender=GanCongDoan.CongDoan.through)
@@ -49,6 +52,7 @@ def gancongdoan_congdoan_changed(sender, instance, action, **kwargs):
 
                     SoLuongToiThieu = round(8*60*60/nhanvien.get('TongThoiGianCuaNhanVien'))
                     SoLuongDatTiepTheo = SoLuongToiThieu*(20/100)+SoLuongToiThieu
+                    print(SoLuongDatTiepTheo)
                     GiaCongDoan = congdoan.DonGia
                     SoLuongLam.objects.create(NhanVien=nhanvien_obj, SanPham=san_pham_obj, GanCongDoan=instance,
                                               TongThoiGianCuaNhanVien=nhanvien.get('TongThoiGianCuaNhanVien'),
@@ -56,4 +60,19 @@ def gancongdoan_congdoan_changed(sender, instance, action, **kwargs):
                                               SoLuongToiThieu=SoLuongToiThieu,
                                               LuongNgayToiThieu=SoLuongToiThieu*GiaCongDoan,
                                               SoLuongDatTiepTheo=SoLuongDatTiepTheo,
+                                              LuongKhiDatSoTiepTheo=GiaCongDoan*Decimal(SoLuongDatTiepTheo)*constants.PhanTramThuong,
                                               KichCauDeTangLuong=SoLuongDatTiepTheo-SoLuongToiThieu)
+
+
+@receiver(post_save, sender=User)
+def create_staff(sender, instance, created, **kwargs):
+    if created:
+        NhanVien.objects.create(User=instance)
+
+
+@receiver(post_save, sender=User)
+def save_staff(sender, instance, **kwargs):
+    if instance.first_name and instance.last_name:
+        nhanvien = NhanVien.objects.get(User=instance)
+        nhanvien.TenNhanVien = instance.first_name + ' ' + instance.last_name
+        nhanvien.save()
