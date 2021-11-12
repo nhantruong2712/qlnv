@@ -1,8 +1,9 @@
 from django.db.models.signals import m2m_changed, post_save, pre_save
 from django.dispatch import receiver
+from datetime import date, timedelta
 
 from . import constants
-from .models import GanCongDoan, CongDoan, Gan, ChiaCongDoan, SoLuongLam
+from .models import GanCongDoan, CongDoan, Gan, ChiaCongDoan, SoLuongLam, SoLuongMoiGio, LuongNgayNhanVien
 from .utils import AssignTask
 from sanxuat.models import NhanVien, SanPham
 from decimal import Decimal
@@ -42,26 +43,35 @@ def gancongdoan_congdoan_changed(sender, instance, action, **kwargs):
                 nhanvien_id = int(nhanvien.get('NhanVien'))
                 nhanvien_obj = NhanVien.objects.get(id=nhanvien_id)
                 san_pham_obj = SanPham.objects.get(id=instance.TenSanPham_id)
-                if SoLuongLam.objects.filter(NhanVien=nhanvien_id, SanPham=instance.TenSanPham_id).exists():
-                    nhanvienlam = SoLuongLam.objects.get(NhanVien=nhanvien_id, SanPham=instance.TenSanPham_id)
-                    nhanvienlam.GiaCongDoan += congdoan.DonGia
-                    nhanvienlam.LuongNgay = nhanvienlam.GiaCongDoan * instance.SoLuong1Ngay
-                    nhanvienlam.LuongNgayToiThieu = nhanvienlam.SoLuongToiThieu * nhanvienlam.GiaCongDoan
-                    nhanvienlam.save()
+                # Tạo số lượng mỗi giờ
+                SoLuongMoiGio.objects.create(NhanVien_id=nhanvien_id, CongDoan=congdoan, SanPham=san_pham_obj)
+                if LuongNgayNhanVien.objects.filter(NhanVien_id=nhanvien_id, created_at__date=date.today()).exists():
+                    pass
                 else:
-
-                    SoLuongToiThieu = round(8*60*60/nhanvien.get('TongThoiGianCuaNhanVien'))
-                    SoLuongDatTiepTheo = SoLuongToiThieu*(20/100)+SoLuongToiThieu
-                    print(SoLuongDatTiepTheo)
-                    GiaCongDoan = congdoan.DonGia
-                    SoLuongLam.objects.create(NhanVien=nhanvien_obj, SanPham=san_pham_obj, GanCongDoan=instance,
-                                              TongThoiGianCuaNhanVien=nhanvien.get('TongThoiGianCuaNhanVien'),
-                                              GiaCongDoan= GiaCongDoan, LuongNgay=GiaCongDoan*instance.SoLuong1Ngay,
-                                              SoLuongToiThieu=SoLuongToiThieu,
-                                              LuongNgayToiThieu=SoLuongToiThieu*GiaCongDoan,
-                                              SoLuongDatTiepTheo=SoLuongDatTiepTheo,
-                                              LuongKhiDatSoTiepTheo=GiaCongDoan*Decimal(SoLuongDatTiepTheo)*constants.PhanTramThuong,
-                                              KichCauDeTangLuong=SoLuongDatTiepTheo-SoLuongToiThieu)
+                    try:
+                        ngay_hom_qua = date.today() - timedelta(1)
+                        luong_hom_qua = LuongNgayNhanVien.objects.get(NhanVien_id=nhanvien_id, created_at=ngay_hom_qua)
+                        LuongNgayNhanVien.objects.create(NhanVien_id=nhanvien_id, LuongNgayHomTruoc=luong_hom_qua.LuongNgayHomTruoc)
+                    except:
+                        LuongNgayNhanVien.objects.create(NhanVien_id=nhanvien_id)
+                    if SoLuongLam.objects.filter(NhanVien=nhanvien_id, SanPham=instance.TenSanPham_id).exists():
+                        nhanvienlam = SoLuongLam.objects.get(NhanVien=nhanvien_id, SanPham=instance.TenSanPham_id)
+                        nhanvienlam.GiaCongDoan += congdoan.DonGia
+                        nhanvienlam.LuongNgay = nhanvienlam.GiaCongDoan * instance.SoLuong1Ngay
+                        nhanvienlam.LuongNgayToiThieu = nhanvienlam.SoLuongToiThieu * nhanvienlam.GiaCongDoan
+                        nhanvienlam.save()
+                    else:
+                        SoLuongToiThieu = round(8*60*60/nhanvien.get('TongThoiGianCuaNhanVien'))
+                        SoLuongDatTiepTheo = SoLuongToiThieu*(20/100)+SoLuongToiThieu
+                        GiaCongDoan = congdoan.DonGia
+                        SoLuongLam.objects.create(NhanVien=nhanvien_obj, SanPham=san_pham_obj, GanCongDoan=instance,
+                                                  TongThoiGianCuaNhanVien=nhanvien.get('TongThoiGianCuaNhanVien'),
+                                                  GiaCongDoan= GiaCongDoan, LuongNgay=GiaCongDoan*instance.SoLuong1Ngay,
+                                                  SoLuongToiThieu=SoLuongToiThieu,
+                                                  LuongNgayToiThieu=SoLuongToiThieu*GiaCongDoan,
+                                                  SoLuongDatTiepTheo=SoLuongDatTiepTheo,
+                                                  LuongKhiDatSoTiepTheo=GiaCongDoan*Decimal(SoLuongDatTiepTheo)*constants.PhanTramThuong,
+                                                  KichCauDeTangLuong=SoLuongDatTiepTheo-SoLuongToiThieu)
 
 
 @receiver(post_save, sender=User)

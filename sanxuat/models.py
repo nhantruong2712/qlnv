@@ -15,24 +15,34 @@ class CongDoan(models.Model):
     )
     TenCongDoan = models.TextField(verbose_name='Tên Công Đoạn')
     NhomCongDoan = models.CharField(max_length=2, choices=NHOMCONGDOAN_CHOICES, default=2, verbose_name='Nhóm Công Đoạn')
-    ThoiGianHoanThanh = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Thời Gian Hoàn Thành')   
-    ThietBi = models.ForeignKey(thietbi, on_delete=CASCADE, verbose_name='Thiết Bị' )
-    BacTho = models.ForeignKey(bactho, on_delete=CASCADE, verbose_name='Bậc Thợ' )
+    ThoiGianHoanThanh = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Thời Gian Hoàn Thành',
+                                            null=True, blank=True)
+    ThietBi = models.ForeignKey(thietbi, on_delete=CASCADE, verbose_name='Thiết Bị')
+    BacTho = models.ForeignKey(bactho, on_delete=CASCADE, verbose_name='Bậc Thợ')
     DonGia = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='Đơn Giá')
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
     def save(self, *args, **kwargs):
-        x = bactho.objects.get(tenbactho = self.BacTho) #lấy từ trong bảng bactho để lấy giá trị tương ứng với name
-        self.DonGia = (self.ThoiGianHoanThanh)*(x.dongia)
+        x = bactho.objects.get(tenbactho=self.BacTho) #lấy từ trong bảng bactho để lấy giá trị tương ứng với name
+        self.DonGia = self.ThoiGianHoanThanh * x.dongia
         return super(CongDoan, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.TenCongDoan
-        
+
+
 class Chuyen(models.Model):
     class Meta:
         verbose_name_plural = 'Chuyền'
     TenChuyen = models.TextField(verbose_name='Tên Chuyền')
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
     def __str__(self):
         return self.TenChuyen
-    
+
+
 class NhanVien(models.Model):
     class Meta:
         verbose_name_plural = 'Nhân Viên'
@@ -51,6 +61,8 @@ class NhanVien(models.Model):
     MayUT1 = models.ForeignKey(thietbi, on_delete=CASCADE, verbose_name='Ưu Tiên 1', null = True, blank=True)
     TenChuyen = models.ForeignKey(Chuyen, on_delete=CASCADE, verbose_name='Thuộc Chuyền', null = True, blank=True)
     TinhTrang = models.CharField(max_length=20, choices=TINHTRANG_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
 
     def __str__(self):
         return self.TenNhanVien if self.TenNhanVien else self.User.username
@@ -67,13 +79,16 @@ class SanPham(models.Model):
     NgayGiaoHang = models.DateField(verbose_name='Ngày Giao Hàng')
     ChuyenThucHien = models.ForeignKey(Chuyen, on_delete=CASCADE, verbose_name='Giao Việc Cho')
     DienGiai = models.TextField(verbose_name='Ghi Chú')
+    hoan_tat = models.BooleanField(default=False, verbose_name='Hoàn tất')
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
     # CongDoan = models.ManyToManyField(CongDoan)
+
     def __str__(self):
         return self.MaSanPham
-    
-    
 
-#class Product(models.Model):
+# class Product(models.Model):
 #    name = models.CharField(max_length=255)
 #    price = models.DecimalField(max_digits=10, decimal_places=2)
 #    inventory = models.IntegerField(default=0)
@@ -84,7 +99,7 @@ class SanPham(models.Model):
 #    def __str__(self):
 #        return self.name
 
-#class ViDuDropDown(models.Model):
+# class ViDuDropDown(models.Model):
 #    NHOMCONGDOAN_CHOICES = (
 #        (1,'CHUẨN BỊ'),
 #        (2,'SẢN XUẤT'),

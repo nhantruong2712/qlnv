@@ -6,7 +6,7 @@ from django.urls import reverse
 
 
 class GanCongDoan(models.Model):
-    TenSanPham = models.ForeignKey(SanPham, on_delete=CASCADE)
+    TenSanPham = models.ForeignKey(SanPham, on_delete=CASCADE, limit_choices_to={'hoan_tat': False})
     CongDoan = models.ManyToManyField(CongDoan, through='Gan')
     SaiSoChoPhep = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     TongNhanVien = models.DecimalField(max_digits=10, decimal_places=2, null=True)
@@ -16,6 +16,8 @@ class GanCongDoan(models.Model):
     SoLuongSanPham = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     SoNgayHoanThanh = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     SanLuong1Gio = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
 
     def get_absolute_url(self):
         return reverse("quytrinhsanxuat:tao-san-pham")
@@ -24,7 +26,11 @@ class GanCongDoan(models.Model):
         verbose_name_plural = 'Gán Công Đoạn'
 
     def __str__(self):
-        return str(self.TenSanPham) + " " + str(self.CongDoan)
+        return str(self.TenSanPham)
+    
+    def delete(self, *args, **kwargs):
+        SoLuongMoiGio.objects.filter(SanPham=self.TenSanPham).delete()
+        return super(GanCongDoan, self).delete(*args, **kwargs)
 
 
 class ChiaCongDoan(GanCongDoan):
@@ -33,7 +39,7 @@ class ChiaCongDoan(GanCongDoan):
         verbose_name_plural = 'Chia Công Đoạn'
 
     def __str__(self):
-        return f"Chia cong doan {self.TenSanPham}"
+        return f"Chia cong doan {self.TenSanPham} - {self.created_at.date()}"
 
     def save(self, *args, **kwargs):
         return None
@@ -49,6 +55,8 @@ class Gan(models.Model):
     GanCongDoan = models.ForeignKey(GanCongDoan, on_delete=models.CASCADE)
     NhanVien = models.ForeignKey(NhanVien, on_delete=models.CASCADE, null=True, blank=True)
     TongThoiGianCuaNhanVien = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
 
     def __str__(self):
         return str(self.id)
@@ -97,7 +105,70 @@ class SoLuongLam(models.Model):
     SoLuongDatTiepTheo = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     LuongKhiDatSoTiepTheo = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     KichCauDeTangLuong = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
 
     def __str__(self):
         return self.SanPham.TenSanPham
+
+
+class LuongNgayNhanVien(models.Model):
+    NhanVien = models.ForeignKey(NhanVien, on_delete=models.CASCADE)
+    LuongNgayHomTruoc = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    LuongNgayHomNay = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    LuongThang = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+    class Meta:
+        verbose_name_plural = 'Lương Ngày Của Nhân Viên'
+
+    def __str__(self):
+        return "{} - {}".format(self.NhanVien.TenNhanVien, self.created_at.date())
+
+
+class SoLuongMoiGio(models.Model):
+    NhanVien = models.ForeignKey(NhanVien, on_delete=models.CASCADE, null=True, blank=True)
+    SanPham = models.ForeignKey(SanPham, on_delete=models.CASCADE)
+    CongDoan = models.ForeignKey(CongDoan, on_delete=models.CASCADE, null=True, blank=True)
+    TamDenChinGio = models.PositiveIntegerField(null=True, blank=True, default=0)
+    ChinDenMuoiGio = models.PositiveIntegerField(null=True, blank=True, default=0)
+    MuoiDenMuoiMot = models.PositiveIntegerField(null=True, blank=True, default=0)
+    MuoiMotDenMuoiHai = models.PositiveIntegerField(null=True, blank=True, default=0)
+    MotDenHai = models.PositiveIntegerField(null=True, blank=True, default=0)
+    HaiDenBa = models.PositiveIntegerField(null=True, blank=True, default=0)
+    BaDenBon = models.PositiveIntegerField(null=True, blank=True, default=0)
+    BonDenNam = models.PositiveIntegerField(null=True, blank=True, default=0)
+    ThemGio = models.PositiveIntegerField(null=True, blank=True, default=0)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+    class Meta:
+        verbose_name_plural = 'Số Lượng Làm Mỗi Giờ'
+
+    def __str__(self):
+        return "{} - {} - {}".format(self.NhanVien.TenNhanVien, self.SanPham.TenSanPham, self.created_at.date())
+
+    def save(self, *args, **kwargs):
+        try:
+            luong_ngay = LuongNgayNhanVien.objects.get(NhanVien=self.NhanVien, created_at__date=self.created_at.date())
+
+            tong_so_luong = (self.TamDenChinGio + self.ChinDenMuoiGio + self.MuoiDenMuoiMot +
+                             self.MotDenHai + self.HaiDenBa + self.BaDenBon + self.BonDenNam + self.ThemGio)
+            luong_ngay.LuongNgayHomNay = self.CongDoan.DonGia * tong_so_luong
+            luong_ngay.save()
+            luong_thang = LuongNgayNhanVien.objects.filter(NhanVien=self.NhanVien,
+                                                           created_at__month=self.created_at.month,
+                                                           created_at__year=self.created_at.year)
+            tong_luong_ngay = 0
+            for luong in luong_thang:
+                tong_luong_ngay += luong.LuongNgayHomNay
+            for luong in luong_thang:
+                luong.LuongThang = tong_luong_ngay
+                luong.save()
+        except:
+            pass
+        return super(SoLuongMoiGio, self).save(*args, **kwargs)
+
+
 

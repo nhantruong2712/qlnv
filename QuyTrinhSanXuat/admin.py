@@ -1,13 +1,10 @@
 from django import forms
 from django.contrib import admin
 from django.contrib.admin.widgets import FilteredSelectMultiple
-
 from sanxuat.models import CongDoan
+from .models import ChiaCongDoan, GanCongDoan, Gan, SoLuongLam, SoLuongMoiGio, LuongNgayNhanVien
 
-from .models import ChiaCongDoan, GanCongDoan, Gan, SoLuongLam
-# Register your models here.
 
-    
 class GanCongDoanForm(forms.ModelForm):
     CongDoan = forms.ModelMultipleChoiceField(widget=FilteredSelectMultiple('Công đoạn', False),
             queryset = CongDoan.objects.all())
@@ -49,42 +46,18 @@ class ChiaCongDoanInline(admin.TabularInline):
     def TongThoiGian(self, instance):
         return instance.TongThoiGianCuaNhanVien
 
+
 class NhanVienInline(admin.TabularInline):
     model = SoLuongLam
     extra = 0
     fields = ['NhanVien', 'TongThoiGianCuaNhanVien', 'GiaCongDoan', 'LuongNgay', 'SoLuongToiThieu', 'LuongNgayToiThieu',
               'SoLuongDatTiepTheo', 'LuongKhiDatSoTiepTheo', 'KichCauDeTangLuong']
-    # readonly_fields = ('CongDoan', 'BacTho', 'ThoiGian', 'ThietBi', 'TongThoiGian', 'Bac', 'May')
 
     def has_delete_permission(self, request, obj=None):
         return False
 
     def has_add_permission(self, request, obj=None):
         return False
-
-    def NhanVien(self, instance):
-        return instance.NhanVien
-
-    def TongThoiGianCuaNhanVien(self, instance):
-        return instance.TongThoiGianCuaNhanVien
-
-    def GiaCongDoan(self, instance):
-        return instance.GiaCongDoan
-
-    def LuongNgay(self, instance):
-        return instance.CongDoan.ThietBi
-
-    def SoLuongToiThieu(self, instance):
-        return instance.CongDoan.BacTho
-
-    def LuongNgayToiThieu(self, instance):
-        return instance.NhanVien.BacTho
-
-    def SoLuongDatTiepTheo(self, instance):
-        return instance.NhanVien.MayUT1
-
-    def KichCauDeTangLuong(self, instance):
-        return instance.NhanVien.MayUT1
 
 
 class ChiaCongDoanAdmin(admin.ModelAdmin):
@@ -103,4 +76,6 @@ class SoLuongLamAdmin(admin.ModelAdmin):
 
 admin.site.register(GanCongDoan, GanCongDoanAdmin)
 admin.site.register(ChiaCongDoan, ChiaCongDoanAdmin)
+admin.site.register(SoLuongMoiGio)
+admin.site.register(LuongNgayNhanVien)
 # admin.site.register(SoLuongLam, SanPhamAdmin)
