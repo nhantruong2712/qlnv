@@ -5,4 +5,4 @@ from QuyTrinhSanXuat.models import GanCongDoan
 
 
 def index(request):
-    return render(request, '../templates/default/doitacsanxuat.html')
+    return render(request, 'QuyTrinhSanXuat/doitacsanxuat.html')

@@ -147,7 +147,7 @@ class SoLuongMoiGio(models.Model):
         verbose_name_plural = 'Số Lượng Làm Mỗi Giờ'
 
     def __str__(self):
-        return "{} - {} - {}".format(self.NhanVien.TenNhanVien, self.SanPham.TenSanPham, self.created_at.date())
+        return "{} - {} - {} - {}".format(self.NhanVien.TenNhanVien, self.SanPham.TenSanPham, self.CongDoan.TenCongDoan ,self.created_at.date())
 
     def save(self, *args, **kwargs):
         try:
