@@ -104,10 +104,10 @@ zappa_settings.json
 /site
 
 # django staticfiles
-/static
-staticfiles
-media
-data
+#/static
+#staticfiles
+#media
+#data
 
 # mypy
 .mypy_cache/
