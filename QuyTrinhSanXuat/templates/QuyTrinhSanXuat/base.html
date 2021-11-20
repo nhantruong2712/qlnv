@@ -516,32 +516,27 @@
                     <ul class="vertical-nav-menu">
                         <li class="app-sidebar__heading">Menu</li>
                         <li>
-                            <a href="index.html" class="mm-active">
+                            <a href="{% url 'QuyTrinhSanXuat:index' %}">
                                 <i class="metismenu-icon pe-7s-rocket"></i>
                                 Tổng quan
                             </a>
                         </li>
                         <li>
                         <li>
-                            <a href="/admin/lists">
+                            <a href="{% url 'QuyTrinhSanXuat:admin_list' %}">
                                 <i class="metismenu-icon pe-7s-users"></i>
                                 Admin
                             </a>
                         </li>
                         <li>
-                            <a href="/doitacsanxuat/lists">
+                            <a href="{% url 'QuyTrinhSanXuat:doitacsanxuat_list' %}">
                                 <i class="metismenu-icon pe-7s-users"></i>
                                 Đối tác sản xuất
                             </a>
                         </li>
+
                         <li>
-                            <a href="/danhmuc">
-                                <i class="metismenu-icon pe-7s-albums"></i>
-                                Danh mục sản phẩm
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/khachhang">
+                            <a href="{% url 'QuyTrinhSanXuat:khachhang' %}">
                                 <i class="metismenu-icon pe-7s-users"></i>
                                 Khách hàng
                             </a>
@@ -595,7 +590,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="/nhanvien/lists">
+                            <a href="{% url 'QuyTrinhSanXuat:nhanvien_list' %}">
                                 <i class="metismenu-icon pe-7s-users"></i>
                                 Nhân viên
                             </a>

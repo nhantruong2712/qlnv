@@ -1,6 +1,7 @@
 from django.db.models.signals import m2m_changed, post_save, pre_save
 from django.dispatch import receiver
 from datetime import date, timedelta
+from django.contrib.auth.models import User
 
 from . import constants
 from .models import GanCongDoan, CongDoan, Gan, ChiaCongDoan, SoLuongLam, SoLuongMoiGio, LuongNgayNhanVien
@@ -86,3 +87,9 @@ def save_staff(sender, instance, **kwargs):
         nhanvien = NhanVien.objects.get(User=instance)
         nhanvien.TenNhanVien = instance.first_name + ' ' + instance.last_name
         nhanvien.save()
+
+
+@receiver(post_save, sender=NhanVien)
+def save_staff(sender, instance, created ,**kwargs):
+    if created:
+        a = 'a'

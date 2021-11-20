@@ -13,9 +13,23 @@ class CongDoanResource(resources.ModelResource):
     class Meta:
         model = CongDoan
 
+
 class NhanVienAdmin(ImportExportModelAdmin):
     resource_class = NhanVienResource
     list_filter = ('TenChuyen',)
+
+    def before_save_instance(self, instance, using_transactions, dry_run):
+        a = 'a'
+        return instance
+
+    def before_import_row(row, row_number=None, **kwargs):
+        a = 'a'
+        return a
+
+    def before_import(dataset, using_transactions, dry_run, **kwargs):
+        a = 'a'
+        return a
+
 
 class CongDoanAdmin(ImportExportModelAdmin):
     resource_class = CongDoanResource

@@ -51,7 +51,7 @@ class NhanVien(models.Model):
         ('TN','TẠM NGHỈ'),
         ('NV','NGHỈ VIỆC'),
     )
-    User = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    User = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     TenNhanVien = models.CharField(max_length=255, verbose_name='Tên Nhân Viên', null=True)
     BacTho = models.ForeignKey(bactho, on_delete=CASCADE, verbose_name='Bậc Thợ', null = True, blank=True)
     SoDienThoai = models.IntegerField(verbose_name='Số Điện Thoại', null = True, blank=True)
@@ -60,12 +60,23 @@ class NhanVien(models.Model):
     ChucDanh = models.ForeignKey(chucvu, on_delete=CASCADE, verbose_name='Chức Danh', null = True, blank=True)
     MayUT1 = models.ForeignKey(thietbi, on_delete=CASCADE, verbose_name='Ưu Tiên 1', null = True, blank=True)
     TenChuyen = models.ForeignKey(Chuyen, on_delete=CASCADE, verbose_name='Thuộc Chuyền', null = True, blank=True)
-    TinhTrang = models.CharField(max_length=20, choices=TINHTRANG_CHOICES)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True)
+    TinhTrang = models.CharField(max_length=20, choices=TINHTRANG_CHOICES, null=True)
 
     def __str__(self):
         return self.TenNhanVien if self.TenNhanVien else self.User.username
+
+
+    def before_save_instance(self, instance, using_transactions, dry_run):
+        a = 'a'
+        return instance
+
+    def before_import_row(row, row_number=None, **kwargs):
+        a = 'a'
+        return a
+
+    def before_import(dataset, using_transactions, dry_run, **kwargs):
+        a = 'a'
+        return a
 
 
 class SanPham(models.Model):

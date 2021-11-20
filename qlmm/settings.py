@@ -90,10 +90,23 @@ WSGI_APPLICATION = 'qlmm.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'mydatabase',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'qlnv',
+        'USER': 'postgres',
+        'PASSWORD': 'multiplyzz1',
+        'HOST': 'localhost',
+        'PORT': '5432',
+
     }
+
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': 'mydatabase',
+#     }
+# }
 
 
 # Password validation
