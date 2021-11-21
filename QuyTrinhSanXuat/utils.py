@@ -160,7 +160,7 @@ class AssignTask(object):
                 for emp in self.manage.get_list_employees():
                     if emp.device == stage.device:
                         try:
-                            if emp.level >= stage.level:
+                            # if emp.level >= stage.level:
                                 gan = Gan.objects.filter(GanCongDoan__id=self.id_instance, CongDoan__id=stage.ID)
                                 emp.add_time_working(stage.time_complete)
                                 gan.update(NhanVien=emp.ID)
@@ -174,7 +174,7 @@ class AssignTask(object):
                 for emp in self.manage.get_list_employees():
                     if emp.device == stage.device:
                         try:
-                            if emp.level >= stage.level:
+                            # if emp.level >= stage.level:
                                 emp.add_time_working(stage.time_complete)
                                 emp.add_stage_id(stage.ID)
                                 if emp.total_time_working >= self.takt_time - self.tolerance:

@@ -55,24 +55,25 @@ def gancongdoan_congdoan_changed(sender, instance, action, **kwargs):
                         LuongNgayNhanVien.objects.create(NhanVien_id=nhanvien_id, LuongNgayHomTruoc=luong_hom_qua.LuongNgayHomTruoc)
                     except:
                         LuongNgayNhanVien.objects.create(NhanVien_id=nhanvien_id)
-                    if SoLuongLam.objects.filter(NhanVien=nhanvien_id, SanPham=instance.TenSanPham_id).exists():
-                        nhanvienlam = SoLuongLam.objects.get(NhanVien=nhanvien_id, SanPham=instance.TenSanPham_id)
-                        nhanvienlam.GiaCongDoan += congdoan.DonGia
-                        nhanvienlam.LuongNgay = nhanvienlam.GiaCongDoan * instance.SoLuong1Ngay
-                        nhanvienlam.LuongNgayToiThieu = nhanvienlam.SoLuongToiThieu * nhanvienlam.GiaCongDoan
-                        nhanvienlam.save()
-                    else:
-                        SoLuongToiThieu = round(8*60*60/nhanvien.get('TongThoiGianCuaNhanVien'))
-                        SoLuongDatTiepTheo = SoLuongToiThieu*(20/100)+SoLuongToiThieu
-                        GiaCongDoan = congdoan.DonGia
-                        SoLuongLam.objects.create(NhanVien=nhanvien_obj, SanPham=san_pham_obj, GanCongDoan=instance,
-                                                  TongThoiGianCuaNhanVien=nhanvien.get('TongThoiGianCuaNhanVien'),
-                                                  GiaCongDoan= GiaCongDoan, LuongNgay=GiaCongDoan*instance.SoLuong1Ngay,
-                                                  SoLuongToiThieu=SoLuongToiThieu,
-                                                  LuongNgayToiThieu=SoLuongToiThieu*GiaCongDoan,
-                                                  SoLuongDatTiepTheo=SoLuongDatTiepTheo,
-                                                  LuongKhiDatSoTiepTheo=GiaCongDoan*Decimal(SoLuongDatTiepTheo)*constants.PhanTramThuong,
-                                                  KichCauDeTangLuong=SoLuongDatTiepTheo-SoLuongToiThieu)
+                if SoLuongLam.objects.filter(NhanVien=nhanvien_id, SanPham=instance.TenSanPham_id).exists():
+                    nhanvienlam = SoLuongLam.objects.get(NhanVien=nhanvien_id, SanPham=instance.TenSanPham_id)
+                    nhanvienlam.GiaCongDoan += congdoan.DonGia
+                    nhanvienlam.LuongNgay = nhanvienlam.GiaCongDoan * instance.SoLuong1Ngay
+                    nhanvienlam.LuongNgayToiThieu = nhanvienlam.SoLuongToiThieu * nhanvienlam.GiaCongDoan
+                    nhanvienlam.save()
+                else:
+                    SoLuongToiThieu = round(8 * 60 * 60 / nhanvien.get('TongThoiGianCuaNhanVien'))
+                    SoLuongDatTiepTheo = SoLuongToiThieu * (20 / 100) + SoLuongToiThieu
+                    GiaCongDoan = congdoan.DonGia
+                    SoLuongLam.objects.create(NhanVien=nhanvien_obj, SanPham=san_pham_obj, GanCongDoan=instance,
+                                              TongThoiGianCuaNhanVien=nhanvien.get('TongThoiGianCuaNhanVien'),
+                                              GiaCongDoan=GiaCongDoan, LuongNgay=GiaCongDoan * instance.SoLuong1Ngay,
+                                              SoLuongToiThieu=SoLuongToiThieu,
+                                              LuongNgayToiThieu=SoLuongToiThieu * GiaCongDoan,
+                                              SoLuongDatTiepTheo=SoLuongDatTiepTheo,
+                                              LuongKhiDatSoTiepTheo=GiaCongDoan * Decimal(
+                                                  SoLuongDatTiepTheo) * constants.PhanTramThuong,
+                                              KichCauDeTangLuong=SoLuongDatTiepTheo - SoLuongToiThieu)
 
 
 @receiver(post_save, sender=User)
