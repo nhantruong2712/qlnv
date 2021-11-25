@@ -11,9 +11,126 @@ from decimal import Decimal
 from django.contrib.auth.models import User
 
 
+@receiver(post_save, sender=SoLuongLam)
+def tao_so_luong_lam(sender, instance, created, **kwargs):
+    if created:
+        gans = Gan.objects.filter(NhanVien=instance.NhanVien, GanCongDoan__TenSanPham=instance.SanPham)
+        gancongdoan = GanCongDoan.objects.get(TenSanPham=instance.SanPham)
+        # Chua co gan truoc do
+        if not gans.exists():
+            instance.LuongNgay = instance.GiaCongDoan * gancongdoan.SoLuong1Ngay
+            instance.SoLuongToiThieu = round(8 * 60 * 60 / instance.TongThoiGianCuaNhanVien)
+            instance.LuongNgayToiThieu = instance.SoLuongToiThieu * instance.GiaCongDoan
+            instance.SoLuongDatTiepTheo = instance.SoLuongToiThieu * (20 / 100) + instance.SoLuongToiThieu
+            instance.LuongKhiDatSoTiepTheo = instance.GiaCongDoan * Decimal(
+                instance.SoLuongDatTiepTheo) * constants.PhanTramThuong
+        else:
+            GiaCongDoan = 0
+            for gan in gans:
+                TongThoiGianCuaNhanVien = gan.TongThoiGianCuaNhanVien
+                GiaCongDoan += gan.CongDoan.DonGia
+            instance.TongThoiGian = TongThoiGianCuaNhanVien
+            instance.GiaCongDoan = GiaCongDoan
+            instance.LuongNgay = GiaCongDoan * gancongdoan.SoLuong1Ngay
+            instance.SoLuongToiThieu = round(8 * 60 * 60 / TongThoiGianCuaNhanVien)
+            instance.SoLuongDatTiepTheo = instance.SoLuongToiThieu * (20 / 100) + instance.SoLuongToiThieu
+            instance.LuongNgayToiThieu = instance.SoLuongToiThieu * GiaCongDoan
+            instance.LuongKhiDatSoTiepTheo = GiaCongDoan * Decimal(
+                instance.SoLuongDatTiepTheo) * constants.PhanTramThuong
+        instance.GanCongDoan = gancongdoan
+        instance.KichCauDeTangLuong = instance.SoLuongDatTiepTheo - instance.SoLuongToiThieu
+        instance.save()
+
+        # create Luong Ngay Nhan Vien
+
+
+@receiver(pre_save, sender=Gan)
+def chiacongdoan_changed(sender, instance, **kwargs):
+    gan_truoc_do = Gan.objects.get(id=instance.id)
+    nhan_vien_truoc = gan_truoc_do.NhanVien
+    gans = Gan.objects.filter(NhanVien=nhan_vien_truoc, GanCongDoan=instance.GanCongDoan)
+    # Nếu thêm nhân viên vào chia công đoạn
+    if gan_truoc_do.NhanVien is None:
+        try:
+            SoLuongLam.objects.get(NhanVien_id=instance.NhanVien_id,
+                                   SanPham_id=instance.GanCongDoan.TenSanPham_id)
+        except:
+            SoLuongLam.objects.create(NhanVien_id=instance.NhanVien_id,
+                                      GiaCongDoan=instance.CongDoan.DonGia,
+                                      TongThoiGianCuaNhanVien=instance.CongDoan.ThoiGianHoanThanh,
+                                      SanPham_id=instance.GanCongDoan.TenSanPham_id)
+    # Trường hợp đổi thành None
+    elif instance.NhanVien is None:
+        so_luong_lam = SoLuongLam.objects.get(NhanVien=nhan_vien_truoc, SanPham=instance.GanCongDoan.TenSanPham)
+        if gans.count() > 1:
+            tong_thoi_gian = so_luong_lam.TongThoiGianCuaNhanVien - instance.TongThoiGianCuaNhanVien
+            gia_cong_doan = so_luong_lam.GiaCongDoan - instance.CongDoan.DonGia
+            luong_ngay = gia_cong_doan * instance.GanCongDoan.SoLuong1Ngay
+            so_luong_toi_thieu = round(8 * 60 * 60 / tong_thoi_gian)
+            luong_ngay_toi_thieu = so_luong_toi_thieu * gia_cong_doan
+            so_luong_dat_tiep_theo = so_luong_toi_thieu * (20 / 100) + so_luong_toi_thieu
+            luong_dat_tiep_theo = gia_cong_doan * Decimal(so_luong_dat_tiep_theo) * constants.PhanTramThuong
+            kich_cau = so_luong_dat_tiep_theo - luong_ngay_toi_thieu
+            so_luong_lam.update(TongThoiGianCuaNhanVien=tong_thoi_gian, GiaCongDoan=gia_cong_doan,
+                                LuongNgayNhanVien=luong_ngay, SoLuongToiThieu=so_luong_toi_thieu,
+                                LuongNgayToiThieu=luong_ngay_toi_thieu,
+                                SoLuongDatTiepTheo=so_luong_dat_tiep_theo,
+                                LuongKhiDatSoTiepTheo=luong_dat_tiep_theo, KichCauDeTangLuong=kich_cau)
+        else:
+            so_luong_lam.delete()
+    # Đổi nhân viên
+    else:
+        # Chi co 1 gan thi thay the Nhan vien
+        if gans.count() == 1:
+            so_luong_lam = SoLuongLam.objects.get(NhanVien_id=nhan_vien_truoc.id,
+                                                  SanPham_id=instance.GanCongDoan.TenSanPham_id)
+            so_luong_lam.update(NhanVien=instance.NhanVien)
+        else:
+            # check xem đã có số lượng làm trước đó chưa, chưa thì tạo
+            try:
+                so_luong_lam = SoLuongLam.objects.get(NhanVien_id=instance.NhanVien_id,
+                                                      SanPham_id=instance.GanCongDoan.TenSanPham_id)
+                # update
+                tong_thoi_gian = so_luong_lam.TongThoiGianCuaNhanVien + instance.TongThoiGianCuaNhanVien
+                gia_cong_doan = so_luong_lam.GiaCongDoan + instance.CongDoan.DonGia
+                luong_ngay = gia_cong_doan * instance.GanCongDoan.SoLuong1Ngay
+                so_luong_toi_thieu = round(8 * 60 * 60 / tong_thoi_gian)
+                luong_ngay_toi_thieu = so_luong_toi_thieu * gia_cong_doan
+                so_luong_dat_tiep_theo = so_luong_toi_thieu * (20 / 100) + so_luong_toi_thieu
+                luong_dat_tiep_theo = gia_cong_doan * Decimal(so_luong_dat_tiep_theo) * constants.PhanTramThuong
+                kich_cau = so_luong_dat_tiep_theo - luong_ngay_toi_thieu
+                so_luong_lam.update(TongThoiGianCuaNhanVien=tong_thoi_gian, GiaCongDoan=gia_cong_doan,
+                                    LuongNgayNhanVien=luong_ngay, SoLuongToiThieu=so_luong_toi_thieu,
+                                    LuongNgayToiThieu=luong_ngay_toi_thieu,
+                                    SoLuongDatTiepTheo=so_luong_dat_tiep_theo,
+                                    LuongKhiDatSoTiepTheo=luong_dat_tiep_theo, KichCauDeTangLuong=kich_cau)
+            except:
+                SoLuongLam.objects.create(NhanVien_id=instance.NhanVien_id,
+                                          GiaCongDoan=instance.CongDoan.DonGia,
+                                          TongThoiGianCuaNhanVien=instance.CongDoan.ThoiGianHoanThanh,
+                                          SanPham_id=instance.GanCongDoan.TenSanPham_id)
+
+            # update so luong lam nhan vien truoc
+            so_luong_lam_nv_truoc = SoLuongLam.objects.get(NhanVien_id=nhan_vien_truoc.id,
+                                                           SanPham_id=instance.GanCongDoan.TenSanPham_id)
+            tong_thoi_gian = so_luong_lam_nv_truoc.TongThoiGianCuaNhanVien - instance.TongThoiGianCuaNhanVien
+            gia_cong_doan = so_luong_lam_nv_truoc.GiaCongDoan - instance.CongDoan.DonGia
+            luong_ngay = gia_cong_doan * instance.GanCongDoan.SoLuong1Ngay
+            so_luong_toi_thieu = round(8 * 60 * 60 / tong_thoi_gian)
+            luong_ngay_toi_thieu = so_luong_toi_thieu * gia_cong_doan
+            so_luong_dat_tiep_theo = so_luong_toi_thieu * (20 / 100) + so_luong_toi_thieu
+            luong_dat_tiep_theo = gia_cong_doan * Decimal(so_luong_dat_tiep_theo) * constants.PhanTramThuong
+            kich_cau = so_luong_dat_tiep_theo - luong_ngay_toi_thieu
+            so_luong_lam_nv_truoc.update(TongThoiGianCuaNhanVien=tong_thoi_gian, GiaCongDoan=gia_cong_doan,
+                                         LuongNgayNhanVien=luong_ngay, SoLuongToiThieu=so_luong_toi_thieu,
+                                         LuongNgayToiThieu=luong_ngay_toi_thieu,
+                                         SoLuongDatTiepTheo=so_luong_dat_tiep_theo,
+                                         LuongKhiDatSoTiepTheo=luong_dat_tiep_theo, KichCauDeTangLuong=kich_cau)
+
+
 @receiver(m2m_changed, sender=GanCongDoan.CongDoan.through)
 def gancongdoan_congdoan_changed(sender, instance, action, **kwargs):
-    actions = ["post_add", "post_remove", "post_clear"]
+    actions = ["post_add", "post_remove", "post_clear", "post_save"]
     if action in actions:
         assign_task = AssignTask()
         assign_task.get_tolerance(instance.SaiSoChoPhep)
@@ -52,7 +169,8 @@ def gancongdoan_congdoan_changed(sender, instance, action, **kwargs):
                     try:
                         ngay_hom_qua = date.today() - timedelta(1)
                         luong_hom_qua = LuongNgayNhanVien.objects.get(NhanVien_id=nhanvien_id, created_at=ngay_hom_qua)
-                        LuongNgayNhanVien.objects.create(NhanVien_id=nhanvien_id, LuongNgayHomTruoc=luong_hom_qua.LuongNgayHomTruoc)
+                        LuongNgayNhanVien.objects.create(NhanVien_id=nhanvien_id,
+                                                         LuongNgayHomTruoc=luong_hom_qua.LuongNgayHomTruoc)
                     except:
                         LuongNgayNhanVien.objects.create(NhanVien_id=nhanvien_id)
                 if SoLuongLam.objects.filter(NhanVien=nhanvien_id, SanPham=instance.TenSanPham_id).exists():
@@ -91,6 +209,6 @@ def save_staff(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=NhanVien)
-def save_staff(sender, instance, created ,**kwargs):
+def save_staff(sender, instance, created, **kwargs):
     if created:
         a = 'a'

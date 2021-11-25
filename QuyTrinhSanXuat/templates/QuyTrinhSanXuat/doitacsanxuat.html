@@ -1,5 +1,5 @@
 {% extends "QuyTrinhSanXuat/base.html" %}
-{% block content %}
+{% block content %}{% load static %}
 <div class="app-main__outer">
     <div class="app-main__inner">
         <div class="app-page-title">
@@ -9,7 +9,7 @@
                         <i class="pe-7s-graph icon-gradient bg-ripe-malin">
                         </i>
                     </div>
-                    <div>Dashboard
+                    <div>Trang chủ
                         <div class="page-title-subheading">Tổng quan
                         </div>
                     </div>
@@ -26,7 +26,7 @@
                                 <div class="widget-subheading">Tổng số admin</div>
                             </div>
                             <div class="widget-content-right">
-                                <div class="widget-numbers text-white"><span><?=$infos['admin']?></span></div>
+                                <div class="widget-numbers text-white"><span>{{ so_luong_admin }}</span></div>
                             </div>
                         </div>
                     </div>
@@ -80,7 +80,7 @@
                                 <div class="widget-subheading">Tổng số Dự án đang triển khai</div>
                             </div>
                             <div class="widget-content-right">
-                                <div class="widget-numbers text-white"><span><?=$infos['duan']?></span></div>
+                                <div class="widget-numbers text-white"><span>{{ so_luong_san_pham }}</span></div>
                             </div>
                         </div>
                     </div>
@@ -92,7 +92,6 @@
                 <div class="col-md-12">
                     <div class="main-card mb-3 card">
                         <div class="card-header">Danh sách 5 admin mới nhất
-
                         </div>
                         <div class="table-responsive">
                             <table class="align-middle mb-0 table table-borderless table-striped table-hover">
@@ -107,35 +106,34 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php if($infos['admin']) foreach($infos['admins'] as $admin){?>
+                                {% for admin in admin_moi_nhat %}
                                 <tr>
-                                    <td class="text-center text-muted">#<?=$admin->id?></td>
+                                    <td class="text-center text-muted">#{{ admin.nhan_vien.id }}</td>
                                     <td>
                                         <div class="widget-content p-0">
                                             <div class="widget-content-wrapper">
                                                 <div class="widget-content-left mr-3">
                                                     <div class="widget-content-left">
                                                         <img width="40" class="rounded-circle"
-                                                             src="assets/images/avatars/4.jpg" alt="">
+                                                             src="{% static './QuyTrinhSanXuat/assets/images/avatars/4.jpg' %}" alt="">
                                                     </div>
                                                 </div>
                                                 <div class="widget-content-left flex2">
-                                                    <div class="widget-heading"><?=$admin->ten?></div>
-                                                    <div class="widget-subheading opacity-7"><?=vietnamese::cut($admin->
-                                                        ghichu,50)?>
-                                                    </div>
+                                                    <div class="widget-heading"><?=$admin->{{ admin.first_name }} {{ admin.last_name }}</div>
+{#                                                    <div class="widget-subheading opacity-7"><?=vietnamese::cut($admin->#}
+{#                                                        ghichu,50)?>#}
+{#                                                    </div>#}
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="text-center"><?=$admin->sdt?></td>
+                                    <td class="text-center">{{admin.nhan_vien.SoDienThoai}}</td>
                                     <td class="text-center">
-                                        <div class="badge badge-<?=$admin->trangthai?'success':'danger'?>"><?=$admin->
-                                            trangthai?'Hoạt động':'Bị khóa'?>
+                                        <div class="badge {% if admin.nhan_vien.TinhTrang == '1' %}  {% endif %}badge-<?=$admin->trangthai?'success':'danger'?>">{{admin.nhan_vien.TinhTrang}}
                                         </div>
                                     </td>
                                     <td class="text-center" style="width: 150px;">
-                                        <?=$admin->email?>
+                                        {{admin.email}}
                                     </td>
                                     <td class="text-center">
                                         <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
@@ -144,18 +142,81 @@
                                         </button>
                                     </td>
                                 </tr>
-                                <?php }?>
+                                {% endfor %}
                                 </tbody>
                             </table>
                         </div>
                         <div class="d-block text-center card-footer">
 
-                            <a class="btn-wide btn btn-success" href="/admin/lists">Xem tất cả</a>
+                            <a class="btn-wide btn btn-success" href="{% url 'QuyTrinhSanXuat:admin_list' %}">Xem tất cả</a>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-card mb-3 card">
+                        <div class="card-header">Danh sách 5 Dự án mới nhất
 
+                        </div>
+                        <div class="table-responsive">
+                            <table class="align-middle mb-0 table table-borderless table-striped table-hover">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th>Tên</th>
+                                    <th class="text-center">Mã</th>
+                                    <th class="text-center">Ngày đồng bộ</th>
+                                    <th class="text-center">Ngày giao hàng</th>
+                                    <th class="text-center">Số lượng</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for san_pham in san_pham_moi_nhat %}
+                                <tr>
+                                    <td class="text-center text-muted">#{{ san_pham.id }}</td>
+                                    <td>
+                                        <div class="widget-content p-0">
+                                            <div class="widget-content-wrapper">
+
+                                                <div class="widget-content-left flex2">
+                                                    <div class="widget-heading">{{ san_pham.TenSanPham }}</div>
+{#                                                    <div class="widget-subheading opacity-7"><?=vietnamese::cut($admin->#}
+{#                                                        ghichu,50)?>#}
+{#                                                    </div>#}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">{{ san_pham.MaSanPham }}</td>
+                                    <td class="text-center">
+                                        {{ san_pham.NgayDongBo }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ san_pham.NgayGiaoHang }}
+                                    </td>
+                                    <td class="text-center" style="width: 150px;">
+                                        {{ san_pham.SoLuong }}
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+                                                data-target="#exampleModalLong" data-action="viewDA"
+                                                data-id="<?=$admin->id?>">Xem
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-block text-center card-footer">
+
+                            <a class="btn-wide btn btn-success" href="{% url "QuyTrinhSanXuat:duan_list" %}">Xem tất cả</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="row">
                 <div class="col-md-12">
@@ -176,35 +237,40 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php if($infos['doitacsanxuat']) foreach($infos['doitacsanxuats'] as $admin){?>
+{#                                <?php if($infos['doitacsanxuat']) foreach($infos['doitacsanxuats'] as $admin){?>#}
                                 <tr>
-                                    <td class="text-center text-muted">#<?=$admin->id?></td>
+{#                                    <td class="text-center text-muted">#<?=$admin->id?></td>#}
+                                    <td class="text-center text-muted">#1</td>
                                     <td>
                                         <div class="widget-content p-0">
                                             <div class="widget-content-wrapper">
                                                 <div class="widget-content-left mr-3">
                                                     <div class="widget-content-left">
                                                         <img width="40" class="rounded-circle"
-                                                             src="assets/images/avatars/3.jpg" alt="">
+                                                             src="{% static './QuyTrinhSanXuat/assets/images/avatars/3.jpg' %}" alt="">
                                                     </div>
                                                 </div>
+{#                                                <div class="widget-content-left flex2">#}
+{#                                                    <div class="widget-heading"><?=$admin->ten?></div>#}
+{#                                                    <div class="widget-subheading opacity-7"><?=vietnamese::cut($admin->#}
+{#                                                        ghichu,50)?>#}
+{#                                                    </div>#}
+{#                                                </div>#}
                                                 <div class="widget-content-left flex2">
-                                                    <div class="widget-heading"><?=$admin->ten?></div>
-                                                    <div class="widget-subheading opacity-7"><?=vietnamese::cut($admin->
-                                                        ghichu,50)?>
-                                                    </div>
+                                                    <div class="widget-heading">ABC</div>
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="text-center"><?=$admin->sdt?></td>
+                                    <td class="text-center">0123456789</td>
                                     <td class="text-center">
-                                        <div class="badge badge-<?=$admin->trangthai?'success':'danger'?>"><?=$admin->
-                                            trangthai?'Hoạt động':'Bị khóa'?>
-                                        </div>
+{#                                        <div class="badge badge-<?=$admin->trangthai?'success':'danger'?>"><?=$admin->#}
+{#                                            trangthai?'Hoạt động':'Bị khóa'?>#}
+{#                                        </div>#}
+                                        NONE
                                     </td>
                                     <td class="text-center" style="width: 150px;">
-                                        <?=$admin->email?>
+                                        abc@gmail.com
                                     </td>
                                     <td class="text-center">
                                         <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
@@ -246,33 +312,34 @@
                                 <tbody>
                                 <?php if($infos['nhacungcap']) foreach($infos['nhacungcaps'] as $admin){?>
                                 <tr>
-                                    <td class="text-center text-muted">#<?=$admin->id?></td>
+                                    <td class="text-center text-muted">#1</td>
                                     <td>
                                         <div class="widget-content p-0">
                                             <div class="widget-content-wrapper">
                                                 <div class="widget-content-left mr-3">
                                                     <div class="widget-content-left">
                                                         <img width="40" class="rounded-circle"
-                                                             src="assets/images/avatars/2.jpg" alt="">
+                                                             src="{% static './QuyTrinhSanXuat/assets/images/avatars/2.jpg' %}" alt="">
                                                     </div>
                                                 </div>
                                                 <div class="widget-content-left flex2">
-                                                    <div class="widget-heading"><?=$admin->ten?></div>
-                                                    <div class="widget-subheading opacity-7"><?=vietnamese::cut($admin->
-                                                        ghichu,50)?>
-                                                    </div>
+                                                    <div class="widget-heading">ABC</div>
+{#                                                    <div class="widget-subheading opacity-7"><?=vietnamese::cut($admin->#}
+{#                                                        ghichu,50)?>#}
+{#                                                    </div>#}
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="text-center"><?=$admin->sdt?></td>
+                                    <td class="text-center">0123456789</td>
                                     <td class="text-center">
-                                        <div class="badge badge-<?=$admin->trangthai?'success':'danger'?>"><?=$admin->
-                                            trangthai?'Hoạt động':'Bị khóa'?>
-                                        </div>
+{#                                        <div class="badge badge-<?=$admin->trangthai?'success':'danger'?>"><?=$admin->#}
+{#                                            trangthai?'Hoạt động':'Bị khóa'?>#}
+{#                                        </div>#}
+                                        NONE
                                     </td>
                                     <td class="text-center" style="width: 150px;">
-                                        <?=$admin->email?>
+                                        abc@gmail.com
                                     </td>
                                     <td class="text-center">
                                         <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
@@ -314,33 +381,34 @@
                                 <tbody>
                                 <?php if($infos['khachhang']) foreach($infos['khachhangs'] as $admin){?>
                                 <tr>
-                                    <td class="text-center text-muted">#<?=$admin->id?></td>
+                                    <td class="text-center text-muted">#1</td>
                                     <td>
                                         <div class="widget-content p-0">
                                             <div class="widget-content-wrapper">
                                                 <div class="widget-content-left mr-3">
                                                     <div class="widget-content-left">
                                                         <img width="40" class="rounded-circle"
-                                                             src="assets/images/avatars/1.jpg" alt="">
+                                                             src="{% static './QuyTrinhSanXuat/assets/images/avatars/1.jpg' %}" alt="">
                                                     </div>
                                                 </div>
                                                 <div class="widget-content-left flex2">
-                                                    <div class="widget-heading"><?=$admin->ten?></div>
-                                                    <div class="widget-subheading opacity-7"><?=vietnamese::cut($admin->
-                                                        ghichu,50)?>
-                                                    </div>
+                                                    <div class="widget-heading">ABC</div>
+{#                                                    <div class="widget-subheading opacity-7"><?=vietnamese::cut($admin->#}
+{#                                                        ghichu,50)?>#}
+{#                                                    </div>#}
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="text-center"><?=$admin->sdt?></td>
+                                    <td class="text-center">0123456789</td>
                                     <td class="text-center">
-                                        <div class="badge badge-<?=$admin->trangthai?'success':'danger'?>"><?=$admin->
-                                            trangthai?'Hoạt động':'Bị khóa'?>
-                                        </div>
+{#                                        <div class="badge badge-<?=$admin->trangthai?'success':'danger'?>"><?=$admin->#}
+{#                                            trangthai?'Hoạt động':'Bị khóa'?>#}
+{#                                        </div>#}
+                                        NONE
                                     </td>
                                     <td class="text-center" style="width: 150px;">
-                                        <?=$admin->email?>
+                                        abc@gmail.com
                                     </td>
                                     <td class="text-center">
                                         <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
@@ -356,67 +424,6 @@
                         <div class="d-block text-center card-footer">
 
                             <a class="btn-wide btn btn-success" href="/khachhang">Xem tất cả</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="main-card mb-3 card">
-                        <div class="card-header">Danh sách 5 Dự án mới nhất
-
-                        </div>
-                        <div class="table-responsive">
-                            <table class="align-middle mb-0 table table-borderless table-striped table-hover">
-                                <thead>
-                                <tr>
-                                    <th class="text-center">#</th>
-                                    <th>Tên</th>
-                                    <th class="text-center">Mã</th>
-                                    <th class="text-center">Sản phẩm</th>
-                                    <th class="text-center">Số lượng</th>
-                                    <th class="text-center">Actions</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php if($infos['duan']) foreach($infos['duans'] as $admin){?>
-                                <tr>
-                                    <td class="text-center text-muted">#<?=$admin->id?></td>
-                                    <td>
-                                        <div class="widget-content p-0">
-                                            <div class="widget-content-wrapper">
-
-                                                <div class="widget-content-left flex2">
-                                                    <div class="widget-heading"><?=$admin->ten?></div>
-                                                    <div class="widget-subheading opacity-7"><?=vietnamese::cut($admin->
-                                                        ghichu,50)?>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="text-center"><?=$admin->ma?></td>
-                                    <td class="text-center">
-                                        <?=$admin->sanphamten?>
-                                    </td>
-                                    <td class="text-center" style="width: 150px;">
-                                        <?=$admin->soluong?>
-                                    </td>
-                                    <td class="text-center">
-                                        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
-                                                data-target="#exampleModalLong" data-action="viewDA"
-                                                data-id="<?=$admin->id?>">Xem
-                                        </button>
-                                    </td>
-                                </tr>
-                                <?php }?>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="d-block text-center card-footer">
-
-                            <a class="btn-wide btn btn-success" href="/duan">Xem tất cả</a>
                         </div>
                     </div>
                 </div>

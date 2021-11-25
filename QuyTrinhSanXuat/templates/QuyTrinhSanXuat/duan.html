@@ -1,9 +1,10 @@
-<?php include(dirname(__FILE__).'/header.php') ?>
-<?php
-$hanche = 0;
-if( !empty($employee) && !empty($employee->vaitro) && !in_array('duan',$employee->vaitro) && in_array('tiendo',$employee->vaitro) )
-    $hanche = 1;
-?>
+{% extends "QuyTrinhSanXuat/base.html" %}
+{% block content %}{% load static %}
+{#<?php#}
+{#$hanche = 0;#}
+{#if( !empty($employee) && !empty($employee->vaitro) && !in_array('duan',$employee->vaitro) && in_array('tiendo',$employee->vaitro) )#}
+{#    $hanche = 1;#}
+{#?>#}
 
             <div class="app-main__outer">
                 <div class="app-main__inner">
@@ -164,8 +165,4 @@ if( !empty($employee) && !empty($employee->vaitro) && !in_array('duan',$employee
                     </div>
                 </div>
                     </div>
-    
- 
-
- 
-<? include(dirname(__FILE__).'/footer.php') ?>
+{% endblock %}

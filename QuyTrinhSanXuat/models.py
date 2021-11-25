@@ -111,6 +111,10 @@ class SoLuongLam(models.Model):
     def __str__(self):
         return self.SanPham.TenSanPham
 
+    def save(self, *args, **kwargs):
+
+        return super(SoLuongLam, self).save(*args, **kwargs)
+
 
 class LuongNgayNhanVien(models.Model):
     NhanVien = models.ForeignKey(NhanVien, on_delete=models.CASCADE)
