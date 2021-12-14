@@ -141,9 +141,9 @@ class AssignTask(object):
 
     def get_takl_time(self):
         self.takt_time = self.total_time / self.total_emp
-        return self.takt_time
+        return self.takt_time # thoi gian trung binh cua 1 nv
 
-    def get_tolerance(self, tolerance):
+    def get_tolerance(self, tolerance): # sai so cho phep
         self.tolerance = tolerance
 
     def get_amount_a_day(self):
@@ -162,29 +162,31 @@ class AssignTask(object):
                         try:
                             # if emp.level >= stage.level:
                                 gan = Gan.objects.filter(GanCongDoan__id=self.id_instance, CongDoan__id=stage.ID)
-                                emp.add_time_working(stage.time_complete)
-                                gan.update(NhanVien=emp.ID)
-                                gan.update(TongThoiGianCuaNhanVien=emp.total_time_working)
-                                # print(emp.total_time_working)
-                                self.manage.remove_employee_assigned(emp)
-                                break
-                        except TypeError:
-                            print(f'{emp.name} chưa có bậc thợ')
+                                if gan.count() == 1:
+                                    emp.add_time_working(stage.time_complete)
+                                    gan.update(TongThoiGianCuaNhanVien = emp.total_time_working)
+                                    gan[0].NhanVien.add(emp.ID)
+                                    # print(emp.total_time_working)
+                                    self.manage.remove_employee_assigned(emp)
+                                    break
+                        except Exception as e:
+                            print(e)
             else:
                 for emp in self.manage.get_list_employees():
                     if emp.device == stage.device:
                         try:
                             # if emp.level >= stage.level:
-                                emp.add_time_working(stage.time_complete)
-                                emp.add_stage_id(stage.ID)
                                 if emp.total_time_working >= self.takt_time - self.tolerance:
+                                    emp.add_time_working(stage.time_complete)
+                                    emp.add_stage_id(stage.ID)
                                     for stage_id in emp.stage_ids:
                                         gan = Gan.objects.filter(GanCongDoan__id=self.id_instance, CongDoan__id=stage_id)
-                                        gan.update(NhanVien=emp.ID)
-                                        gan.update(TongThoiGianCuaNhanVien=emp.total_time_working)
+                                        if gan.count() == 1:
+                                            gan[0].NhanVien.add(emp.ID)
+                                            gan.update(TongThoiGianCuaNhanVien=emp.total_time_working)
                                     # print(emp.total_time_working)
                                     self.manage.remove_employee_assigned(emp)
                                 break
-                        except TypeError:
-                            print(f'{emp.name} chưa có bậc thợ')
+                        except Exception as e:
+                            print(e)
 

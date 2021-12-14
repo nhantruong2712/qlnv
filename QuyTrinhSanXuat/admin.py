@@ -7,7 +7,7 @@ from .models import ChiaCongDoan, GanCongDoan, Gan, SoLuongLam, SoLuongMoiGio, L
 
 class GanCongDoanForm(forms.ModelForm):
     CongDoan = forms.ModelMultipleChoiceField(widget=FilteredSelectMultiple('Công đoạn', False),
-            queryset = CongDoan.objects.all())
+                                              queryset=CongDoan.objects.all())
 
 
 class GanCongDoanAdmin(admin.ModelAdmin):
@@ -19,8 +19,9 @@ class GanCongDoanAdmin(admin.ModelAdmin):
 class ChiaCongDoanInline(admin.TabularInline):
     model = Gan
     extra = 0
-    fields = ['CongDoan', 'BacTho', 'ThoiGian', 'ThietBi', 'NhanVien', 'TongThoiGian', 'Bac', 'May']
-    readonly_fields = ('CongDoan', 'BacTho', 'ThoiGian', 'ThietBi', 'TongThoiGian', 'Bac', 'May')
+    fields = ['CongDoan', 'BacTho', 'ThoiGian', 'ThietBi', 'NhanVien', 'Bac', 'May'] # 'TongThoiGian',
+    readonly_fields = ('CongDoan', 'BacTho', 'ThoiGian', 'ThietBi', 'Bac', 'May') # 'TongThoiGian',
+    ordering = ["CongDoan"]
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -38,13 +39,23 @@ class ChiaCongDoanInline(admin.TabularInline):
         return instance.CongDoan.BacTho
 
     def Bac(self, instance):
-        return instance.NhanVien.BacTho
+        try:
+            return instance.NhanVien.all()[0].BacTho
+        except:
+            return None
 
     def May(self, instance):
-        return instance.NhanVien.MayUT1
+        try:
+            return instance.NhanVien.all()[0].MayUT1
+        except:
+            return None
 
-    def TongThoiGian(self, instance):
-        return instance.TongThoiGianCuaNhanVien
+    # def TongThoiGian(self, instance):
+    #     if instance.NhanVien.all().count() == 1:
+    #         so_luong_lam = SoLuongLam.objects.get(NhanVien=instance.NhanVien.all()[0],
+    #                                               SanPham=instance.GanCongDoan.TenSanPham)
+    #         return so_luong_lam.TongThoiGianCuaNhanVien
+    #     return None
 
 
 class NhanVienInline(admin.TabularInline):
@@ -65,7 +76,7 @@ class ChiaCongDoanAdmin(admin.ModelAdmin):
     readonly_fields = ('TenSanPham', 'TongNhanVien', 'TongThoiGian', 'NhipSanXuat', 'SaiSoChoPhep', 'SoLuong1Ngay',
                        'SoLuongSanPham', 'SoNgayHoanThanh', 'SanLuong1Gio')
 
-    # change_form_template = "gan_changeform.html"
+    change_form_template = "gan_changeform.html"
 
 
 class SoLuongLamAdmin(admin.ModelAdmin):
