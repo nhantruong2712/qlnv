@@ -1,8 +1,6 @@
-from django.db.models.deletion import CASCADE
 from sanxuat.models import SanPham
-from django.db import models
 from sanxuat.models import *
-from django.urls import reverse
+from sortedm2m.fields import SortedManyToManyField
 
 
 class GanCongDoan(models.Model):
@@ -18,9 +16,6 @@ class GanCongDoan(models.Model):
     SanLuong1Gio = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
-
-    def get_absolute_url(self):
-        return reverse("quytrinhsanxuat:tao-san-pham")
 
     class Meta:
         verbose_name_plural = 'Gán Công Đoạn'
@@ -44,10 +39,6 @@ class ChiaCongDoan(GanCongDoan):
     def save(self, *args, **kwargs):
         return None
 
-    # @property
-    # def Thoigian(self):
-    #     return self.CongDoan.ThoiGianHoanThanh
-
 
 class Gan(models.Model):
     CongDoan = models.ForeignKey(CongDoan, on_delete=models.CASCADE)
@@ -60,8 +51,8 @@ class Gan(models.Model):
     class Meta:
         verbose_name_plural = 'Gán'
 
-    def __str__(self):
-        return "{} - {}".format(self.GanCongDoan.TenSanPham.TenSanPham, self.CongDoan.TenCongDoan)
+    # def __str__(self):
+    #     return "{} - {}".format(self.GanCongDoan.TenSanPham.TenSanPham, self.CongDoan.TenCongDoan)
 
     def save_without_do_something(self, *args, **kwargs):
         return super(Gan, self).save(*args, **kwargs)
@@ -117,8 +108,8 @@ class SoLuongLam(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
-    def __str__(self):
-        return "{} - {}".format(self.SanPham.TenSanPham, self.NhanVien.TenNhanVien)
+    # def __str__(self):
+    #     return "{} - {}".format(self.SanPham.TenSanPham, self.NhanVien.TenNhanVien)
 
 
 class LuongNgayNhanVien(models.Model):

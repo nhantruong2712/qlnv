@@ -154,6 +154,9 @@ class AssignTask(object):
 
     def divide_task(self):
         for stage in self.manage.get_list_stages():
+            a = self.takt_time
+            b = self.tolerance
+            c = stage.time_complete
             if stage.time_complete > self.takt_time + self.tolerance:
                 pass
             elif self.takt_time - self.tolerance <= stage.time_complete <= self.takt_time + self.tolerance:

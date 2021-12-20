@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib import admin
 from django.contrib.admin.widgets import FilteredSelectMultiple
-from sanxuat.models import CongDoan
+
+from sanxuat.models import CongDoan, NhanVien
 from .models import ChiaCongDoan, GanCongDoan, Gan, SoLuongLam, SoLuongMoiGio, LuongNgayNhanVien
 
 
@@ -21,7 +22,15 @@ class ChiaCongDoanInline(admin.TabularInline):
     extra = 0
     fields = ['CongDoan', 'BacTho', 'ThoiGian', 'ThietBi', 'NhanVien', 'Bac', 'May'] # 'TongThoiGian',
     readonly_fields = ('CongDoan', 'BacTho', 'ThoiGian', 'ThietBi', 'Bac', 'May') # 'TongThoiGian',
-    ordering = ["CongDoan"]
+    ordering = ["CongDoan", "NhanVien"]
+    filter_horizontal = ('NhanVien', )
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        nhan_vien_field = super(ChiaCongDoanInline, self).formfield_for_manytomany(db_field, request, **kwargs)
+        if db_field.name == 'NhanVien':
+            gan = self.model.objects.first()
+            nhan_vien_field.queryset = nhan_vien_field.queryset.filter(TenChuyen=gan.GanCongDoan.TenSanPham.ChuyenThucHien)
+        return nhan_vien_field
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -72,7 +81,7 @@ class NhanVienInline(admin.TabularInline):
 
 
 class ChiaCongDoanAdmin(admin.ModelAdmin):
-    inlines = [ChiaCongDoanInline, NhanVienInline]
+    inlines = [NhanVienInline, ChiaCongDoanInline]
     readonly_fields = ('TenSanPham', 'TongNhanVien', 'TongThoiGian', 'NhipSanXuat', 'SaiSoChoPhep', 'SoLuong1Ngay',
                        'SoLuongSanPham', 'SoNgayHoanThanh', 'SanLuong1Gio')
 
@@ -81,14 +90,11 @@ class ChiaCongDoanAdmin(admin.ModelAdmin):
 
 class SoLuongLamAdmin(admin.ModelAdmin):
     inlines = [NhanVienInline]
-    # readonly_fields = ('NhanVien', 'TongThoiGian', 'GiaCongDoan', 'LuongNgay', 'SoLuongToiThieu', 'LuongNgayToiThieu',
-    #                     'SoLuongDatTiepTheo', 'KichCauDeTangLuong')
 
 
+admin.site.register(SoLuongLam)
 admin.site.register(GanCongDoan, GanCongDoanAdmin)
 admin.site.register(ChiaCongDoan, ChiaCongDoanAdmin)
 admin.site.register(SoLuongMoiGio)
 admin.site.register(LuongNgayNhanVien)
 admin.site.register(Gan)
-admin.site.register(SoLuongLam)
-# admin.site.register(SoLuongLam, SanPhamAdmin)
