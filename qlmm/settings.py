@@ -41,9 +41,8 @@ INSTALLED_APPS = [
     'cauhinh',
     'sanxuat',
     'QuyTrinhSanXuat.apps.QuytrinhsanxuatConfig',
-    'sortedm2m',
+    # 'sortedm2m',
 ]
-
 
 #BOOTSTRAP_ADMIN_SIDEBAR_MENU = False
 MIDDLEWARE = [
