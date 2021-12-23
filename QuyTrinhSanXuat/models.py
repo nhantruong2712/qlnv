@@ -1,6 +1,6 @@
 from sanxuat.models import SanPham
 from sanxuat.models import *
-from sortedm2m.fields import SortedManyToManyField
+# from sortedm2m.fields import SortedManyToManyField
 
 
 class GanCongDoan(models.Model):

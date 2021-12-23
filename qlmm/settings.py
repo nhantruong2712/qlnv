@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'cauhinh',
     'sanxuat',
     'QuyTrinhSanXuat.apps.QuytrinhsanxuatConfig',
-    'sortedm2m',
+    # 'sortedm2m',
 ]
 
 
