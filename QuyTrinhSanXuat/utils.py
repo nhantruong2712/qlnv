@@ -1,3 +1,5 @@
+from django.db import transaction
+
 from sanxuat.models import *
 
 from .models import Gan
@@ -154,9 +156,6 @@ class AssignTask(object):
 
     def divide_task(self):
         for stage in self.manage.get_list_stages():
-            a = self.takt_time
-            b = self.tolerance
-            c = stage.time_complete
             if stage.time_complete > self.takt_time + self.tolerance:
                 pass
             elif self.takt_time - self.tolerance <= stage.time_complete <= self.takt_time + self.tolerance:
@@ -164,11 +163,14 @@ class AssignTask(object):
                     if emp.device == stage.device:
                         try:
                             # if emp.level >= stage.level:
+                            # with transaction.atomic():
                                 gan = Gan.objects.filter(GanCongDoan__id=self.id_instance, CongDoan__id=stage.ID)
                                 if gan.count() == 1:
                                     emp.add_time_working(stage.time_complete)
-                                    gan.update(TongThoiGianCuaNhanVien = emp.total_time_working)
+                                    a = gan[0]
+                                    b = gan[0]
                                     gan[0].NhanVien.add(emp.ID)
+                                    gan.update(TongThoiGianCuaNhanVien = emp.total_time_working)
                                     # print(emp.total_time_working)
                                     self.manage.remove_employee_assigned(emp)
                                     break
@@ -179,7 +181,8 @@ class AssignTask(object):
                     if emp.device == stage.device:
                         try:
                             # if emp.level >= stage.level:
-                                if emp.total_time_working >= self.takt_time - self.tolerance:
+                            # with transaction.atomic():
+                                if emp.total_time_working <= self.takt_time + self.tolerance:
                                     emp.add_time_working(stage.time_complete)
                                     emp.add_stage_id(stage.ID)
                                     for stage_id in emp.stage_ids:

@@ -29,7 +29,11 @@ class ChiaCongDoanInline(admin.TabularInline):
         nhan_vien_field = super(ChiaCongDoanInline, self).formfield_for_manytomany(db_field, request, **kwargs)
         if db_field.name == 'NhanVien':
             gan = self.model.objects.first()
-            nhan_vien_field.queryset = nhan_vien_field.queryset.filter(TenChuyen=gan.GanCongDoan.TenSanPham.ChuyenThucHien)
+            try:
+                nhan_vien_field.queryset = nhan_vien_field.queryset.filter(TenChuyen=gan.GanCongDoan.TenSanPham.ChuyenThucHien)
+            except:
+                print("No DataBase to filter")
+                pass
         return nhan_vien_field
 
     def has_delete_permission(self, request, obj=None):
