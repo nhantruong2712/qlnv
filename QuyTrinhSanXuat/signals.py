@@ -228,7 +228,7 @@ def update_so_luong_lam(gan_obj, nhanvien_id, cong_them):
         so_luong_lam.LuongKhiDatSoTiepTheo = so_luong_lam.GiaCongDoan * Decimal(
             so_luong_lam.SoLuongDatTiepTheo) * constants.PhanTramThuong
         so_luong_lam.KichCauDeTangLuong = Decimal(
-            so_luong_lam.SoLuongDatTiepTheo) - so_luong_lam.LuongNgayToiThieu
+            so_luong_lam.SoLuongDatTiepTheo) - so_luong_lam.SoLuongToiThieu
         so_luong_lam.save()
         return True
     except:

@@ -156,43 +156,57 @@ class AssignTask(object):
 
     def divide_task(self):
         for stage in self.manage.get_list_stages():
-            if stage.time_complete > self.takt_time + self.tolerance:
-                pass
-            elif self.takt_time - self.tolerance <= stage.time_complete <= self.takt_time + self.tolerance:
-                for emp in self.manage.get_list_employees():
-                    if emp.device == stage.device:
+            for emp in self.manage.get_list_employees():
+                if emp.device == stage.device:
+                    if emp.total_time_working >= self.takt_time + self.tolerance:
+                        self.manage.remove_employee_assigned(emp)
+                    elif emp.total_time_working + stage.time_complete < self.takt_time + self.tolerance:
                         try:
-                            # if emp.level >= stage.level:
-                            # with transaction.atomic():
-                                gan = Gan.objects.filter(GanCongDoan__id=self.id_instance, CongDoan__id=stage.ID)
-                                if gan.count() == 1:
-                                    emp.add_time_working(stage.time_complete)
-                                    a = gan[0]
-                                    b = gan[0]
-                                    gan[0].NhanVien.add(emp.ID)
-                                    gan.update(TongThoiGianCuaNhanVien = emp.total_time_working)
-                                    # print(emp.total_time_working)
-                                    self.manage.remove_employee_assigned(emp)
-                                    break
-                        except Exception as e:
-                            print(e)
-            else:
-                for emp in self.manage.get_list_employees():
-                    if emp.device == stage.device:
-                        try:
-                            # if emp.level >= stage.level:
-                            # with transaction.atomic():
-                                if emp.total_time_working <= self.takt_time + self.tolerance:
-                                    emp.add_time_working(stage.time_complete)
-                                    emp.add_stage_id(stage.ID)
-                                    for stage_id in emp.stage_ids:
-                                        gan = Gan.objects.filter(GanCongDoan__id=self.id_instance, CongDoan__id=stage_id)
-                                        if gan.count() == 1:
-                                            gan[0].NhanVien.add(emp.ID)
-                                            gan.update(TongThoiGianCuaNhanVien=emp.total_time_working)
-                                    # print(emp.total_time_working)
-                                    self.manage.remove_employee_assigned(emp)
+                            gan = Gan.objects.filter(GanCongDoan__id=self.id_instance, CongDoan__id=stage.ID)
+                            if gan.count() == 1:
+                                emp.add_time_working(stage.time_complete)
+                                gan[0].NhanVien.add(emp.ID)
+                                gan.update(TongThoiGianCuaNhanVien=emp.total_time_working)
                                 break
                         except Exception as e:
                             print(e)
+    # def divide_task(self):
+    #     for stage in self.manage.get_list_stages():
+    #         if stage.time_complete > self.takt_time + self.tolerance:
+    #             pass
+    #         elif self.takt_time - self.tolerance <= stage.time_complete <= self.takt_time + self.tolerance:
+    #             for emp in self.manage.get_list_employees():
+    #                 if emp.device == stage.device:
+    #                     try:
+    #                         # if emp.level >= stage.level:
+    #                         # with transaction.atomic():
+    #                             gan = Gan.objects.filter(GanCongDoan__id=self.id_instance, CongDoan__id=stage.ID)
+    #                             if gan.count() == 1:
+    #                                 emp.add_time_working(stage.time_complete)
+    #                                 gan[0].NhanVien.add(emp.ID)
+    #                                 gan.update(TongThoiGianCuaNhanVien = emp.total_time_working)
+    #                                 # print(emp.total_time_working)
+    #                                 # self.manage.remove_employee_assigned(emp)
+    #                                 break
+    #                     except Exception as e:
+    #                         print(e)
+    #         else:
+    #             for emp in self.manage.get_list_employees():
+    #                 if emp.device == stage.device:
+    #                     try:
+    #                         # if emp.level >= stage.level:
+    #                         # with transaction.atomic():
+    #                             if emp.total_time_working <= self.takt_time + self.tolerance:
+    #                                 emp.add_time_working(stage.time_complete)
+    #                                 emp.add_stage_id(stage.ID)
+    #                                 for stage_id in emp.stage_ids:
+    #                                     gan = Gan.objects.filter(GanCongDoan__id=self.id_instance, CongDoan__id=stage_id)
+    #                                     if gan.count() == 1:
+    #                                         gan[0].NhanVien.add(emp.ID)
+    #                                         gan.update(TongThoiGianCuaNhanVien=emp.total_time_working)
+    #                                 # print(emp.total_time_working)
+    #                                 # self.manage.remove_employee_assigned(emp)
+    #                             break
+    #                     except Exception as e:
+    #                         print(e)
 
