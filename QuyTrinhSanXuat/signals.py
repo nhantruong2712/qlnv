@@ -99,6 +99,7 @@ def chiacongdoan_changed(sender, instance, action, **kwargs):
                                                   TongThoiGianCuaNhanVien=instance.CongDoan.ThoiGianHoanThanh,
                                                   SanPham_id=instance.GanCongDoan.TenSanPham_id)
                         tao_so_luong_moi_gio(nhanvien.id, instance.CongDoan.id, instance.GanCongDoan.TenSanPham_id)
+                        tao_luong_ngay(nhanvien.id)
                 # else:
                 #     for id_nhan_vien_truoc in list_nhanvien:
                 #         try:
@@ -168,39 +169,28 @@ def gancongdoan_congdoan_changed(sender, instance, action, **kwargs):
         instance.SanLuong1Gio = instance.SoLuong1Ngay / 8
         instance.save()
         assign_task.divide_task()
-        gan = instance.gan_set.all().values('NhanVien', 'TongThoiGianCuaNhanVien', 'CongDoan').distinct()
-        for nhanvien in gan:
-            if nhanvien.get('NhanVien') is None:
-                pass
-            else:
-                congdoan = CongDoan.objects.get(id=nhanvien.get('CongDoan'))
-                nhanvien_id = int(nhanvien.get('NhanVien'))
-                san_pham_obj = SanPham.objects.get(id=instance.TenSanPham_id)
-                # Tạo số lượng mỗi giờ
-                tao_so_luong_moi_gio(nhanvien_id, congdoan.id, san_pham_obj.id)
-                # Tạo Lương Ngày Nhân Viên
-                if LuongNgayNhanVien.objects.filter(NhanVien_id=nhanvien_id, created_at__date=date.today()).exists():
-                    pass
-                else:
-                    try:
-                        ngay_hom_qua = date.today() - timedelta(1)
-                        luong_hom_qua = LuongNgayNhanVien.objects.get(NhanVien_id=nhanvien_id, created_at=ngay_hom_qua)
-                        LuongNgayNhanVien.objects.create(NhanVien_id=nhanvien_id,
-                                                         LuongNgayHomTruoc=luong_hom_qua.LuongNgayHomTruoc)
-                    except:
-                        LuongNgayNhanVien.objects.create(NhanVien_id=nhanvien_id)
-
-                # Tạo Số Lượng Làm
-                try:
-                    nhanvienlam = SoLuongLam.objects.get(NhanVien=nhanvien_id, SanPham=instance.TenSanPham_id)
-                    nhanvienlam.GiaCongDoan += congdoan.DonGia
-                    nhanvienlam.LuongNgay = nhanvienlam.GiaCongDoan * instance.SoLuong1Ngay
-                    nhanvienlam.LuongNgayToiThieu = nhanvienlam.SoLuongToiThieu * nhanvienlam.GiaCongDoan
-                    nhanvienlam.save()
-                except:
-                    SoLuongLam.objects.create(NhanVien_id=nhanvien_id, SanPham=san_pham_obj,
-                                              TongThoiGianCuaNhanVien=nhanvien.get('TongThoiGianCuaNhanVien'),
-                                              GiaCongDoan=congdoan.DonGia)
+        # gan = instance.gan_set.all().values('NhanVien', 'TongThoiGianCuaNhanVien', 'CongDoan').distinct()
+        # for nhanvien in gan:
+        #     if nhanvien.get('NhanVien') is None:
+        #         pass
+        #     else:
+        #         congdoan = CongDoan.objects.get(id=nhanvien.get('CongDoan'))
+        #         nhanvien_id = int(nhanvien.get('NhanVien'))
+        #         san_pham_obj = SanPham.objects.get(id=instance.TenSanPham_id)
+        #         # Tạo Lương Ngày Nhân Viên
+        #         tao_luong_ngay(nhanvien_id)
+        #
+        #         # Tạo Số Lượng Làm
+        #         try:
+        #             nhanvienlam = SoLuongLam.objects.get(NhanVien=nhanvien_id, SanPham=instance.TenSanPham_id)
+        #             nhanvienlam.GiaCongDoan += congdoan.DonGia
+        #             nhanvienlam.LuongNgay = nhanvienlam.GiaCongDoan * instance.SoLuong1Ngay
+        #             nhanvienlam.LuongNgayToiThieu = nhanvienlam.SoLuongToiThieu * nhanvienlam.GiaCongDoan
+        #             nhanvienlam.save()
+        #         except:
+        #             SoLuongLam.objects.create(NhanVien_id=nhanvien_id, SanPham=san_pham_obj,
+        #                                       TongThoiGianCuaNhanVien=nhanvien.get('TongThoiGianCuaNhanVien'),
+        #                                       GiaCongDoan=congdoan.DonGia)
 
 
 def tao_so_luong_moi_gio(nhanvien_id, cong_doan_id, san_pham_id):
@@ -208,6 +198,19 @@ def tao_so_luong_moi_gio(nhanvien_id, cong_doan_id, san_pham_id):
         SoLuongMoiGio.objects.get(NhanVien_id=nhanvien_id, CongDoan_id=cong_doan_id, SanPham_id=san_pham_id)
     except:
         SoLuongMoiGio.objects.create(NhanVien_id=nhanvien_id, CongDoan_id=cong_doan_id, SanPham_id=san_pham_id)
+
+
+def tao_luong_ngay(nhanvien_id):
+    if LuongNgayNhanVien.objects.filter(NhanVien_id=nhanvien_id, created_at__date=date.today()).exists():
+        pass
+    else:
+        try:
+            ngay_hom_qua = date.today() - timedelta(1)
+            luong_hom_qua = LuongNgayNhanVien.objects.get(NhanVien_id=nhanvien_id, created_at=ngay_hom_qua)
+            LuongNgayNhanVien.objects.create(NhanVien_id=nhanvien_id,
+                                             LuongNgayHomTruoc=luong_hom_qua.LuongNgayHomTruoc)
+        except:
+            LuongNgayNhanVien.objects.create(NhanVien_id=nhanvien_id)
 
 
 def update_so_luong_lam(gan_obj, nhanvien_id, cong_them):

@@ -76,10 +76,10 @@ class NhanVienInline(admin.TabularInline):
     model = SoLuongLam
     extra = 0
     fields = ['NhanVien', 'tong_thoi_gian', 'GiaCongDoan', 'luong_ngay', 'so_luong_toi_thieu', 'luong_ngay_toi_thieu',
-              'so_luong_dat_tiep_theo', 'luong_dat_tiep_theo', 'kick_cau_tang_luong']
+              'so_luong_dat_tiep_theo', 'luong_dat_tiep_theo', 'kich_cau_tang_luong']
     readonly_fields = (
         'NhanVien', 'tong_thoi_gian', 'GiaCongDoan', 'luong_ngay', 'so_luong_toi_thieu', 'luong_ngay_toi_thieu',
-        'so_luong_dat_tiep_theo', 'luong_dat_tiep_theo', 'kick_cau_tang_luong')
+        'so_luong_dat_tiep_theo', 'luong_dat_tiep_theo', 'kich_cau_tang_luong')
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -105,7 +105,7 @@ class NhanVienInline(admin.TabularInline):
     def luong_dat_tiep_theo(self, instance):
         return '{0:,}'.format(round(instance.LuongKhiDatSoTiepTheo))
 
-    def kick_cau_tang_luong(self, instance):
+    def kich_cau_tang_luong(self, instance):
         return '{0:,}'.format(round(instance.KichCauDeTangLuong))
 
 
