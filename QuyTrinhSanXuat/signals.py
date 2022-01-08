@@ -4,13 +4,11 @@ from datetime import date, timedelta
 from django.db import transaction
 
 from . import constants
-from .models import GanCongDoan, CongDoan, Gan, SoLuongLam, SoLuongMoiGio, LuongNgayNhanVien
+from .models import GanCongDoan, Gan, SoLuongLam, SoLuongMoiGio, LuongNgayNhanVien
 from .utils import AssignTask
-from sanxuat.models import NhanVien, SanPham
+from sanxuat.models import NhanVien
 from decimal import Decimal
 from django.contrib.auth.models import User
-
-# before_save = []
 
 
 @receiver(post_save, sender=SoLuongLam)
@@ -60,37 +58,13 @@ def chiacongdoan_changed(sender, instance, action, **kwargs):
                     update_so_luong_lam(gan_obj=instance, nhanvien_id=nhanvien.id, cong_them=False)
                 else:
                     so_luong_lam.delete()
-            # before_save.append(nhanvien.id)
 
     actions = ["post_remove", "post_clear", "post_save", "post_add"]
     if action in actions:
-        # # save
-        # try:
-        # total_time = 0
-        # instance_nhanvien = instance.NhanVien.all()
-        #     obj = Gan.objects.values('NhanVien', 'TongThoiGianCuaNhanVien').filter(pk=instance.pk)
-        #     # Because admin inline manytomany cannot show TongThoiGian of many NhanVien, so check if then continue
-        #     if obj.count() == 1:
-        #         for nhanvien in obj:
-        #             if nhanvien['NhanVien'] is not None:
-        #                 gans = Gan.objects.filter(NhanVien__id=nhanvien['NhanVien'], GanCongDoan__id=instance.GanCongDoan.id)
-        #                 if gans.count() == 1:
-        #                     total_time = instance.TongThoiGianCuaNhanVien + instance.CongDoan.ThoiGianHoanThanh
-        #                 else:
-        #                     for gan in gans:
-        #                         total_time += gan.CongDoan.ThoiGianHoanThanh
-        #                 gans.update(TongThoiGianCuaNhanVien=total_time)
-        #             else:
-        #                 instance.TongThoiGianCuaNhanVien = None
-        #         instance.save()
-        # except Exception as e:
-        #     print(e)
         with transaction.atomic():
             try:
-                # list_nhanvien = list(set(before_save))
                 instance_nhanvien = instance.NhanVien.all()
                 # Đổi từ None sang nhân viên (thêm nhân viên)
-                # if len(list_nhanvien) == 0:
                 for nhanvien in instance_nhanvien:
                     update = update_so_luong_lam(gan_obj=instance, nhanvien_id=nhanvien.id, cong_them=True)
                     if not update:
@@ -100,49 +74,8 @@ def chiacongdoan_changed(sender, instance, action, **kwargs):
                                                   SanPham_id=instance.GanCongDoan.TenSanPham_id)
                         tao_so_luong_moi_gio(nhanvien.id, instance.CongDoan.id, instance.GanCongDoan.TenSanPham_id)
                         tao_luong_ngay(nhanvien.id)
-                # else:
-                #     for id_nhan_vien_truoc in list_nhanvien:
-                #         try:
-                #             gans = Gan.objects.filter(NhanVien=id_nhan_vien_truoc, GanCongDoan=instance.GanCongDoan)
-                #         except:
-                #             gans = None
-                #         # Chưa gán nhân viên
-                #         if gans is None:
-                #             try:
-                #                 update_so_luong_lam(gan_obj=instance, nhanvien_id=id_nhan_vien_truoc, cong_them=True)
-                #             except:
-                #                 SoLuongLam.objects.create(NhanVien_id=id_nhan_vien_truoc,
-                #                                           GiaCongDoan=instance.CongDoan.DonGia,
-                #                                           TongThoiGianCuaNhanVien=instance.CongDoan.ThoiGianHoanThanh,
-                #                                           SanPham_id=instance.GanCongDoan.TenSanPham_id)
-                #                 tao_so_luong_moi_gio(id_nhan_vien_truoc, instance.CongDoan.id,
-                #                                      instance.GanCongDoan.TenSanPham_id)
-                        # # Đổi nhân viên
-                        # else:
-                        #     # Chi co 1 gan thi thay the Nhan vien
-                        #     if gans.count() == 1:
-                        #         so_luong_lam = SoLuongLam.objects.get(NhanVien_id=id_nhan_vien_truoc,
-                        #                                               SanPham_id=instance.GanCongDoan.TenSanPham_id)
-                        #         so_luong_lam.NhanVien = instance.NhanVien
-                        #         so_luong_lam.save()
-                        #     else:
-                        #         # check xem đã có số lượng làm trước đó chưa, chưa thì tạo
-                        #         try:
-                        #             SoLuongLam.objects.get(NhanVien_id=id_nhan_vien_truoc,
-                        #                                    SanPham_id=instance.GanCongDoan.TenSanPham_id)
-                        #         except:
-                        #             SoLuongLam.objects.create(NhanVien_id=instance.NhanVien_id,
-                        #                                       GiaCongDoan=instance.CongDoan.DonGia,
-                        #                                       TongThoiGianCuaNhanVien=instance.CongDoan.ThoiGianHoanThanh,
-                        #                                       SanPham_id=instance.GanCongDoan.TenSanPham_id)
-                        #             # Tạo số lượng mỗi giờ
-                        #             tao_so_luong_moi_gio(instance.NhanVien_id, instance.CongDoan.id,
-                        #                                  instance.GanCongDoan.TenSanPham.id)
-                        #         # update so luong lam nhan vien truoc
-                        #         update_so_luong_lam(gan_obj=instance, nhanvien_id=id_nhan_vien_truoc, cong_them=False)
             except Exception as e:
                 print(e)
-        # before_save.clear()
 
 
 @receiver(m2m_changed, sender=GanCongDoan.CongDoan.through)
@@ -169,28 +102,6 @@ def gancongdoan_congdoan_changed(sender, instance, action, **kwargs):
         instance.SanLuong1Gio = instance.SoLuong1Ngay / 8
         instance.save()
         assign_task.divide_task()
-        # gan = instance.gan_set.all().values('NhanVien', 'TongThoiGianCuaNhanVien', 'CongDoan').distinct()
-        # for nhanvien in gan:
-        #     if nhanvien.get('NhanVien') is None:
-        #         pass
-        #     else:
-        #         congdoan = CongDoan.objects.get(id=nhanvien.get('CongDoan'))
-        #         nhanvien_id = int(nhanvien.get('NhanVien'))
-        #         san_pham_obj = SanPham.objects.get(id=instance.TenSanPham_id)
-        #         # Tạo Lương Ngày Nhân Viên
-        #         tao_luong_ngay(nhanvien_id)
-        #
-        #         # Tạo Số Lượng Làm
-        #         try:
-        #             nhanvienlam = SoLuongLam.objects.get(NhanVien=nhanvien_id, SanPham=instance.TenSanPham_id)
-        #             nhanvienlam.GiaCongDoan += congdoan.DonGia
-        #             nhanvienlam.LuongNgay = nhanvienlam.GiaCongDoan * instance.SoLuong1Ngay
-        #             nhanvienlam.LuongNgayToiThieu = nhanvienlam.SoLuongToiThieu * nhanvienlam.GiaCongDoan
-        #             nhanvienlam.save()
-        #         except:
-        #             SoLuongLam.objects.create(NhanVien_id=nhanvien_id, SanPham=san_pham_obj,
-        #                                       TongThoiGianCuaNhanVien=nhanvien.get('TongThoiGianCuaNhanVien'),
-        #                                       GiaCongDoan=congdoan.DonGia)
 
 
 def tao_so_luong_moi_gio(nhanvien_id, cong_doan_id, san_pham_id):
