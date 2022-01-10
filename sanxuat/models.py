@@ -52,6 +52,8 @@ class NhanVien(models.Model):
         ('NV','NGHỈ VIỆC'),
     )
     User = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name="nhan_vien")
+    Ho = models.CharField(max_length=255, verbose_name='Họ Tên Đệm', null=True)
+    Ten = models.CharField(max_length=255, verbose_name='Tên', null=True)
     TenNhanVien = models.CharField(max_length=255, verbose_name='Tên Nhân Viên', null=True)
     BacTho = models.ForeignKey(bactho, on_delete=CASCADE, verbose_name='Bậc Thợ', null = True, blank=True)
     SoDienThoai = models.IntegerField(verbose_name='Số Điện Thoại', null = True, blank=True)

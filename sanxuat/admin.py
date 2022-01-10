@@ -4,6 +4,7 @@ from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from .models import *
 
+
 class NhanVienResource(resources.ModelResource):
     class Meta:
         model = NhanVien
@@ -17,6 +18,7 @@ class CongDoanResource(resources.ModelResource):
 class NhanVienAdmin(ImportExportModelAdmin):
     resource_class = NhanVienResource
     list_filter = ('TenChuyen',)
+    search_fields = ['TenNhanVien']
 
     def before_save_instance(self, instance, using_transactions, dry_run):
         a = 'a'

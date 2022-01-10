@@ -1,9 +1,16 @@
+import tablib
 from django import forms
 from django.contrib import admin
 from django.contrib.admin.widgets import FilteredSelectMultiple
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
 
-from sanxuat.models import CongDoan, NhanVien
+from sanxuat.models import CongDoan
 from .models import ChiaCongDoan, GanCongDoan, Gan, SoLuongLam, SoLuongMoiGio, LuongNgayNhanVien
+
+
+def thousand_format(value):
+    return '{0:,}'.format(round(value))
 
 
 class GanCongDoanForm(forms.ModelForm):
@@ -15,6 +22,38 @@ class GanCongDoanAdmin(admin.ModelAdmin):
     form = GanCongDoanForm
     exclude = ['TongNhanVien', 'TongThoiGian', 'NhipSanXuat', 'SoLuong1Ngay', 'SoLuongSanPham', 'SoNgayHoanThanh',
                'SanLuong1Gio', 'SoLuongLam']
+
+
+class ChiaCongDoanResource(resources.ModelResource):
+    class Meta:
+        model = ChiaCongDoan
+
+
+class SoLuongLamResource(resources.ModelResource):
+    class Meta:
+        model = SoLuongLam
+
+    def export(self, queryset=None, *args, **kwargs):
+        if queryset is None:
+            queryset = self.get_queryset()
+        ds = tablib.Dataset()
+        data = []
+        for chia_cong_doan in queryset:
+            for so_luong_lam in chia_cong_doan.soluonglam_set.all():
+                row = {
+                    'Nhan Vien': so_luong_lam.NhanVien.TenNhanVien,
+                    'Tong Thoi Gian': so_luong_lam.TongThoiGianCuaNhanVien,
+                    'Gia Cong Doan': so_luong_lam.GiaCongDoan,
+                    'Luong Ngay': thousand_format(so_luong_lam.LuongNgay),
+                    'So Luong Toi Thieu': thousand_format(so_luong_lam.SoLuongToiThieu),
+                    'Luong Ngay Toi Thieu': thousand_format(so_luong_lam.LuongNgayToiThieu),
+                    'So Luong Dat Tiep Theo': thousand_format(so_luong_lam.SoLuongDatTiepTheo),
+                    'Luong Dat Tiep Theo': thousand_format(so_luong_lam.LuongKhiDatSoTiepTheo),
+                    'Kich Cau Tang Luong': thousand_format(so_luong_lam.KichCauDeTangLuong),
+                }
+                data.append(row)
+        ds.dict = data
+        return ds
 
 
 class ChiaCongDoanInline(admin.TabularInline):
@@ -75,6 +114,7 @@ class ChiaCongDoanInline(admin.TabularInline):
 class NhanVienInline(admin.TabularInline):
     model = SoLuongLam
     extra = 0
+    ordering = ["NhanVien__TenNhanVien"]
     fields = ['NhanVien', 'tong_thoi_gian', 'GiaCongDoan', 'luong_ngay', 'so_luong_toi_thieu', 'luong_ngay_toi_thieu',
               'so_luong_dat_tiep_theo', 'luong_dat_tiep_theo', 'kich_cau_tang_luong']
     readonly_fields = (
@@ -88,29 +128,30 @@ class NhanVienInline(admin.TabularInline):
         return False
 
     def tong_thoi_gian(self, instance):
-        return '{0:,}'.format(round(instance.TongThoiGianCuaNhanVien))
+        return thousand_format(instance.TongThoiGianCuaNhanVien)
 
     def luong_ngay(self, instance):
-        return '{0:,}'.format(round(instance.LuongNgay))
+        return thousand_format(instance.LuongNgay)
 
     def so_luong_toi_thieu(self, instance):
-        return '{0:,}'.format(round(instance.SoLuongToiThieu))
+        return thousand_format(instance.SoLuongToiThieu)
 
     def luong_ngay_toi_thieu(self, instance):
-        return '{0:,}'.format(round(instance.LuongNgayToiThieu))
+        return thousand_format(instance.LuongNgayToiThieu)
 
     def so_luong_dat_tiep_theo(self, instance):
-        return '{0:,}'.format(round(instance.SoLuongDatTiepTheo))
+        return thousand_format(instance.SoLuongDatTiepTheo)
 
     def luong_dat_tiep_theo(self, instance):
-        return '{0:,}'.format(round(instance.LuongKhiDatSoTiepTheo))
+        return thousand_format(instance.LuongKhiDatSoTiepTheo)
 
     def kich_cau_tang_luong(self, instance):
-        return '{0:,}'.format(round(instance.KichCauDeTangLuong))
+        return thousand_format(instance.KichCauDeTangLuong)
 
 
-class ChiaCongDoanAdmin(admin.ModelAdmin):
+class ChiaCongDoanAdmin(ImportExportModelAdmin):
     inlines = [NhanVienInline, ChiaCongDoanInline]
+    resource_class = SoLuongLamResource
     readonly_fields = ('TenSanPham', 'TongNhanVien', 'TongThoiGian', 'NhipSanXuat', 'SaiSoChoPhep', 'SoLuong1Ngay',
                        'SoLuongSanPham', 'SoNgayHoanThanh', 'SanLuong1Gio')
 
@@ -123,25 +164,25 @@ class SoLuongLamAdmin(admin.ModelAdmin):
         'luong_ngay_toi_thieu', 'so_luong_dat_tiep_theo', 'luong_dat_tiep_theo',)
 
     def tong_thoi_gian(self, instance):
-        return '{0:,}'.format(round(instance.TongThoiGianCuaNhanVien))
+        return thousand_format(instance.TongThoiGianCuaNhanVien)
 
     def gia_cong_doan(self, instance):
-        return '{0:,}'.format(round(instance.GiaCongDoan))
+        return thousand_format(instance.GiaCongDoan)
 
     def so_luong_toi_thieu(self, instance):
-        return '{0:,}'.format(round(instance.SoLuongToiThieu))
+        return thousand_format(instance.SoLuongToiThieu)
 
     def luong_ngay_toi_thieu(self, instance):
-        return '{0:,}'.format(round(instance.LuongNgayToiThieu))
+        return thousand_format(instance.LuongNgayToiThieu)
 
     def so_luong_dat_tiep_theo(self, instance):
-        return '{0:,}'.format(round(instance.SoLuongDatTiepTheo))
+        return thousand_format(instance.SoLuongDatTiepTheo)
 
     def luong_dat_tiep_theo(self, instance):
-        return '{0:,}'.format(round(instance.LuongKhiDatSoTiepTheo))
+        return thousand_format(instance.LuongKhiDatSoTiepTheo)
 
     def luong_ngay(self, instance):
-        return '{0:,}'.format(round(instance.LuongNgay))
+        return thousand_format(instance.LuongNgay)
 
 
 class SoLuongLamMoiGioAdmin(admin.ModelAdmin):
