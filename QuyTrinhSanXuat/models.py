@@ -124,7 +124,7 @@ class LuongNgayNhanVien(models.Model):
         verbose_name_plural = 'Lương Ngày Của Nhân Viên'
 
     def __str__(self):
-        return "{} - {}".format(self.NhanVien.TenNhanVien, self.created_at.date())
+        return "{} - {}".format(self.NhanVien.Ho + ' ' + self.NhanVien.Ten, self.created_at.date())
 
 
 class SoLuongMoiGio(models.Model):
@@ -147,7 +147,7 @@ class SoLuongMoiGio(models.Model):
         verbose_name_plural = 'Số Lượng Làm Mỗi Giờ'
 
     def __str__(self):
-        return "{} - {} - {} - {}".format(self.SanPham.TenSanPham, self.NhanVien.TenNhanVien, self.CongDoan.TenCongDoan,
+        return "{} - {} - {} - {}".format(self.SanPham.TenSanPham, self.NhanVien.Ho + ' ' + self.NhanVien.Ten, self.CongDoan.TenCongDoan,
                                           self.created_at.date())
 
     def save(self, *args, **kwargs):

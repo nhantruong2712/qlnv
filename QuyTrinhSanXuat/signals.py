@@ -159,7 +159,8 @@ def create_staff(sender, instance, created, **kwargs):
 def save_staff(sender, instance, **kwargs):
     if instance.first_name and instance.last_name:
         nhanvien = NhanVien.objects.get(User=instance)
-        nhanvien.TenNhanVien = instance.first_name + ' ' + instance.last_name
+        nhanvien.Ho = instance.first_name
+        nhanvien.Ten = instance.last_name
         nhanvien.save()
 
 

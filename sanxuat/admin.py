@@ -18,7 +18,7 @@ class CongDoanResource(resources.ModelResource):
 class NhanVienAdmin(ImportExportModelAdmin):
     resource_class = NhanVienResource
     list_filter = ('TenChuyen',)
-    search_fields = ['TenNhanVien']
+    search_fields = ['Ho', 'Ten']
 
     def before_save_instance(self, instance, using_transactions, dry_run):
         a = 'a'

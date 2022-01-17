@@ -65,7 +65,7 @@ class NhanVien(models.Model):
     TinhTrang = models.CharField(max_length=20, choices=TINHTRANG_CHOICES, null=True)
 
     def __str__(self):
-        return self.TenNhanVien if self.TenNhanVien else self.User.username
+        return self.Ho + ' ' + self.Ten if self.Ho or self.Ten else self.User.username
 
 
     def before_save_instance(self, instance, using_transactions, dry_run):

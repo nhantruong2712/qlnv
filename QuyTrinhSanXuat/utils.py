@@ -7,9 +7,10 @@ from .models import Gan
 
 class Employee(object):
 
-    def __init__(self, ID, name, level, conveyor, device):
+    def __init__(self, ID, ho, ten, level, conveyor, device):
         self.ID = ID
-        self.name = name
+        self.ho = ho
+        self.ten = ten
         self.level = level
         self.conveyor = conveyor
         self.device = device
@@ -17,7 +18,7 @@ class Employee(object):
         self.stage_ids = []
 
     def get_name(self):
-        return self.name
+        return self.ho + ' ' + self.ten
 
     def add_time_working(self, time_working):
         self.total_time_working += time_working
@@ -88,8 +89,9 @@ class AssignTask(object):
             else:
                 level = emp.BacTho.dongia
             self.manage.add_employee(Employee(
-                emp.id, 
-                emp.TenNhanVien, 
+                emp.id,
+                emp.Ho,
+                emp.Ten,
                 level, 
                 emp.TenChuyen.TenChuyen,
                 emp.MayUT1

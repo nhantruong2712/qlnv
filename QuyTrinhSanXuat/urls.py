@@ -11,4 +11,6 @@ urlpatterns = [
     path('nhanvien/lists/', views.nhanvien_list, name='nhanvien_list'),
     path('nhanvien/cong/', views.nhanvien_cong, name='nhanvien_cong'),
     path('duan-list/', views.duan_list, name='duan_list'),
+    path('login/', views.user_login, name="login"),
+    path('logout/', views.user_logout, name="logout"),
 ]

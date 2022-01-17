@@ -41,7 +41,7 @@ class SoLuongLamResource(resources.ModelResource):
         for chia_cong_doan in queryset:
             for so_luong_lam in chia_cong_doan.soluonglam_set.all():
                 row = {
-                    'Nhan Vien': so_luong_lam.NhanVien.TenNhanVien,
+                    'Nhan Vien': so_luong_lam.NhanVien.Ho + ' ' + so_luong_lam.NhanVien.Ten,
                     'Tong Thoi Gian': so_luong_lam.TongThoiGianCuaNhanVien,
                     'Gia Cong Doan': so_luong_lam.GiaCongDoan,
                     'Luong Ngay': thousand_format(so_luong_lam.LuongNgay),
@@ -114,7 +114,7 @@ class ChiaCongDoanInline(admin.TabularInline):
 class NhanVienInline(admin.TabularInline):
     model = SoLuongLam
     extra = 0
-    ordering = ["NhanVien__TenNhanVien"]
+    ordering = ["NhanVien__Ten"]
     fields = ['NhanVien', 'tong_thoi_gian', 'GiaCongDoan', 'luong_ngay', 'so_luong_toi_thieu', 'luong_ngay_toi_thieu',
               'so_luong_dat_tiep_theo', 'luong_dat_tiep_theo', 'kich_cau_tang_luong']
     readonly_fields = (
