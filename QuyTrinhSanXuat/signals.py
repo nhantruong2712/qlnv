@@ -1,4 +1,4 @@
-from django.db.models.signals import m2m_changed, post_save
+from django.db.models.signals import m2m_changed, post_save, post_delete
 from django.dispatch import receiver
 from datetime import date, timedelta
 from django.db import transaction
@@ -168,9 +168,20 @@ def save_staff(sender, instance, **kwargs):
 def save_staff(sender, instance, created, **kwargs):
     if created:
         try:
-            with transaction.atomic():
-                new_user = User.objects.create(username=instance.SoDienThoai)
-                new_user.set_password(instance.SoDienThoai)
-                new_user.save()
+            if instance is not None:
+                with transaction.atomic():
+                    new_user = User.objects.create(username=str(instance.SoDienThoai))
+                    new_user.set_password(str(instance.SoDienThoai))
+                    new_user.save()
+                    instance.user = new_user
         except:
             pass
+
+
+@receiver(post_delete, sender=NhanVien)
+def delete_staff(sender, instance, **kwargs):
+    try:
+        user = User.objects.get(id=instance.User_id)
+        user.delete()
+    except:
+        pass
