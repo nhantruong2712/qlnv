@@ -68,19 +68,6 @@ class NhanVien(models.Model):
         return self.Ho + ' ' + self.Ten if self.Ho or self.Ten else self.User.username
 
 
-    def before_save_instance(self, instance, using_transactions, dry_run):
-        a = 'a'
-        return instance
-
-    def before_import_row(row, row_number=None, **kwargs):
-        a = 'a'
-        return a
-
-    def before_import(dataset, using_transactions, dry_run, **kwargs):
-        a = 'a'
-        return a
-
-
 class SanPham(models.Model):
     class Meta:
         verbose_name_plural = 'Sản Phẩm'
