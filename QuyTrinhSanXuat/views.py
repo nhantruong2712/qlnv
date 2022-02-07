@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 
 from django.views.generic import CreateView
 from QuyTrinhSanXuat.models import GanCongDoan
@@ -11,6 +12,7 @@ from sanxuat.models import SanPham
 
 
 @login_required(login_url='/login')
+@staff_member_required
 def index(request):
     # admin
     admin = User.objects.filter(Q(is_staff=True) | Q(is_superuser=True))
@@ -25,27 +27,33 @@ def index(request):
     return render(request, 'QuyTrinhSanXuat/doitacsanxuat.html', context)
 
 
+@staff_member_required
 def admin_list(request):
     all_admin = User.objects.filter(Q(is_staff=True) | Q(is_superuser=True))
     return render(request, 'QuyTrinhSanXuat/admin_list.html', context={'admin_list': all_admin})
 
 
+@staff_member_required
 def doitacsanxuat_list(request):
     return render(request, 'QuyTrinhSanXuat/doitacsanxuat_list.html')
 
 
+@staff_member_required
 def khachhang(request):
     return render(request, 'QuyTrinhSanXuat/khachhang.html')
 
 
+@staff_member_required
 def nhanvien_list(request):
     return render(request, 'QuyTrinhSanXuat/nhanvien_list.html')
 
 
+@staff_member_required
 def nhanvien_cong(request):
     return render(request, 'QuyTrinhSanXuat/nhanvien_cong.html')
 
 
+@staff_member_required
 def duan_list(request):
     return render(request, 'QuyTrinhSanXuat/duan.html')
 

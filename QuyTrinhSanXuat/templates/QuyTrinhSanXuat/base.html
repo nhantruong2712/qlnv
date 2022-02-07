@@ -94,11 +94,11 @@
                             </div>
                             <div class="widget-content-left  ml-3 header-user-info">
                                 <div class="widget-heading">
-                                    Alina Mclourd
+                                    {{ request.user.username }}
                                 </div>
-                                <div class="widget-subheading">
-                                    VP People Manager
-                                </div>
+{#                                <div class="widget-subheading">#}
+{#                                    VP People Manager#}
+{#                                </div>#}
                             </div>
                             <div class="widget-content-right header-user-info ml-3">
                                 <button type="button" class="btn-shadow p-1 btn btn-primary btn-sm show-toastr-example">
@@ -515,163 +515,170 @@
                 <div class="app-sidebar__inner">
                     <ul class="vertical-nav-menu">
                         <li class="app-sidebar__heading">Menu</li>
-                        <li>
-                            <a href="{% url 'QuyTrinhSanXuat:index' %}">
-                                <i class="metismenu-icon pe-7s-rocket"></i>
-                                Tổng quan
-                            </a>
-                        </li>
-                        <li>
-                        <li>
-                            <a href="{% url 'QuyTrinhSanXuat:admin_list' %}">
-                                <i class="metismenu-icon pe-7s-users"></i>
-                                Admin
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'QuyTrinhSanXuat:doitacsanxuat_list' %}">
-                                <i class="metismenu-icon pe-7s-users"></i>
-                                Đối tác sản xuất
-                            </a>
-                        </li>
+                        {% if request.user.is_superuser %}
+                            <li>
+                                <a href="{% url 'QuyTrinhSanXuat:index' %}">
+                                    <i class="metismenu-icon pe-7s-rocket"></i>
+                                    Tổng quan
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'QuyTrinhSanXuat:admin_list' %}">
+                                    <i class="metismenu-icon pe-7s-users"></i>
+                                    Admin
+                                </a>
+                            <li>
+                                <a href="{% url 'QuyTrinhSanXuat:doitacsanxuat_list' %}">
+                                    <i class="metismenu-icon pe-7s-users"></i>
+                                    Đối tác sản xuất
+                                </a>
+                            </li>
 
-                        <li>
-                            <a href="{% url 'QuyTrinhSanXuat:khachhang' %}">
-                                <i class="metismenu-icon pe-7s-users"></i>
-                                Khách hàng
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/nhacungcap">
-                                <i class="metismenu-icon pe-7s-users"></i>
-                                Nhà cung cấp
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/phongban">
-                                <i class="metismenu-icon pe-7s-portfolio"></i>
-                                Phòng ban
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/nhomdinhmuc">
-                                <i class="metismenu-icon pe-7s-albums"></i>
-                                Nhóm định mức
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/quyen">
-                                <i class="metismenu-icon pe-7s-box2"></i>
-                                Quyền
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/vaitro">
-                                <i class="metismenu-icon pe-7s-plugin"></i>
-                                Vai trò
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/nhomcongdoan">
-                                <i class="metismenu-icon pe-7s-albums"></i>
-                                Nhóm công đoạn
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/congdoan">
-                                <i class="metismenu-icon pe-7s-hammer"></i>
-                                Công đoạn
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/sanpham">
-                                <i class="metismenu-icon pe-7s-notebook"></i>
-                                Sản phẩm
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'QuyTrinhSanXuat:nhanvien_list' %}">
-                                <i class="metismenu-icon pe-7s-users"></i>
-                                Nhân viên
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/duan">
-                                <i class="metismenu-icon pe-7s-box1"></i>
-                                Dự án
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/bangluong">
-                                <i class="metismenu-icon pe-7s-cash"></i>
-                                Bảng lương
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/nhaphang">
-                                <i class="metismenu-icon pe-7s-back-2"></i>
-                                Nhập hàng
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/xuathang">
-                                <i class="metismenu-icon pe-7s-next-2"></i>
-                                Xuất hàng
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/sanxuat">
-                                <i class="metismenu-icon pe-7s-tools"></i>
-                                Sản xuất
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/thuchi">
-                                <i class="metismenu-icon pe-7s-credit"></i>
-                                Thu chi
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i class="metismenu-icon pe-7s-display1"></i>
-                                Báo cáo
-                                <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
-                            </a>
-                            <ul class="mm-collapse" style="">
-                                <li>
-                                    <a href="/baocao/tiendo">
-                                        <i class="metismenu-icon">
-                                        </i>Tiến độ
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="/baocao/taichinh">
-                                        <i class="metismenu-icon">
-                                        </i>Tài chính
-                                    </a>
-                                </li>
+                            <li>
+                                <a href="{% url 'QuyTrinhSanXuat:khachhang' %}">
+                                    <i class="metismenu-icon pe-7s-users"></i>
+                                    Khách hàng
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/nhacungcap">
+                                    <i class="metismenu-icon pe-7s-users"></i>
+                                    Nhà cung cấp
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/phongban">
+                                    <i class="metismenu-icon pe-7s-portfolio"></i>
+                                    Phòng ban
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/nhomdinhmuc">
+                                    <i class="metismenu-icon pe-7s-albums"></i>
+                                    Nhóm định mức
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/quyen">
+                                    <i class="metismenu-icon pe-7s-box2"></i>
+                                    Quyền
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/vaitro">
+                                    <i class="metismenu-icon pe-7s-plugin"></i>
+                                    Vai trò
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/nhomcongdoan">
+                                    <i class="metismenu-icon pe-7s-albums"></i>
+                                    Nhóm công đoạn
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/congdoan">
+                                    <i class="metismenu-icon pe-7s-hammer"></i>
+                                    Công đoạn
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/sanpham">
+                                    <i class="metismenu-icon pe-7s-notebook"></i>
+                                    Sản phẩm
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'QuyTrinhSanXuat:nhanvien_list' %}">
+                                    <i class="metismenu-icon pe-7s-users"></i>
+                                    Nhân viên
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/duan">
+                                    <i class="metismenu-icon pe-7s-box1"></i>
+                                    Dự án
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/bangluong">
+                                    <i class="metismenu-icon pe-7s-cash"></i>
+                                    Bảng lương
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/nhaphang">
+                                    <i class="metismenu-icon pe-7s-back-2"></i>
+                                    Nhập hàng
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/xuathang">
+                                    <i class="metismenu-icon pe-7s-next-2"></i>
+                                    Xuất hàng
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/sanxuat">
+                                    <i class="metismenu-icon pe-7s-tools"></i>
+                                    Sản xuất
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/thuchi">
+                                    <i class="metismenu-icon pe-7s-credit"></i>
+                                    Thu chi
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="metismenu-icon pe-7s-display1"></i>
+                                    Báo cáo
+                                    <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                </a>
+                                <ul class="mm-collapse" style="">
+                                    <li>
+                                        <a href="/baocao/tiendo">
+                                            <i class="metismenu-icon">
+                                            </i>Tiến độ
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/baocao/taichinh">
+                                            <i class="metismenu-icon">
+                                            </i>Tài chính
+                                        </a>
+                                    </li>
 
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="/tiendo">
-                                <i class="metismenu-icon pe-7s-graph2"></i>
-                                Tiến độ
-                            </a>
-                        </li>
-                        <li class="app-sidebar__heading">Cá nhân</li>
-                        <li>
-                            <a href="/profile">
-                                <i class="metismenu-icon pe-7s-user">
-                                </i>Thông tin cá nhân
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/logout">
-                                <i class="metismenu-icon pe-7s-way">
-                                </i>Đăng xuất
-                            </a>
-                        </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="/tiendo">
+                                    <i class="metismenu-icon pe-7s-graph2"></i>
+                                    Tiến độ
+                                </a>
+                            </li>
+                            <li class="app-sidebar__heading">Cá nhân</li>
+                            <li>
+                                <a href="/profile">
+                                    <i class="metismenu-icon pe-7s-user">
+                                    </i>Thông tin cá nhân
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/logout">
+                                    <i class="metismenu-icon pe-7s-way">
+                                    </i>Đăng xuất
+                                </a>
+                            </li>
+                        {% else %}
+                            <li>
+                                <a href="/bangluong">
+                                    <i class="metismenu-icon pe-7s-cash"></i>
+                                    Bảng lương
+                                </a>
+                            </li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>

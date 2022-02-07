@@ -56,7 +56,7 @@ class NhanVien(models.Model):
     Ten = models.CharField(max_length=255, verbose_name='Tên', null=True)
     TenNhanVien = models.CharField(max_length=255, verbose_name='Tên Nhân Viên', null=True)
     BacTho = models.ForeignKey(bactho, on_delete=CASCADE, verbose_name='Bậc Thợ', null = True, blank=True)
-    SoDienThoai = models.IntegerField(verbose_name='Số Điện Thoại', null = True, blank=True)
+    SoDienThoai = models.CharField(max_length=255, verbose_name='Số Điện Thoại', default="0")
     NgaySinh = models.DateField(verbose_name='Ngày Sinh', null = True, blank=True)
     DiaChi = models.DecimalField(max_digits=10, decimal_places=0, verbose_name='Đại Chỉ', null=True)
     ChucDanh = models.ForeignKey(chucvu, on_delete=CASCADE, verbose_name='Chức Danh', null = True, blank=True)

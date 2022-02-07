@@ -167,4 +167,10 @@ def save_staff(sender, instance, **kwargs):
 @receiver(post_save, sender=NhanVien)
 def save_staff(sender, instance, created, **kwargs):
     if created:
-        a = 'a'
+        try:
+            with transaction.atomic():
+                new_user = User.objects.create(username=instance.SoDienThoai)
+                new_user.set_password(instance.SoDienThoai)
+                new_user.save()
+        except:
+            pass
