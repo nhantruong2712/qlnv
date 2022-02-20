@@ -5,10 +5,37 @@ from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from datetime import datetime
+from itertools import chain
 
-from django.views.generic import CreateView
-from QuyTrinhSanXuat.models import GanCongDoan
-from sanxuat.models import SanPham
+from QuyTrinhSanXuat.func import thousand_format
+from QuyTrinhSanXuat.models import LuongNgayNhanVien, SoLuongLam
+from sanxuat.models import SanPham, NhanVien
+
+
+@login_required(login_url='/login')
+def xem_luong(request):
+    current_month = datetime.now().month
+    try:
+        nhan_vien = NhanVien.objects.get(User=request.user)
+        ho_ten = nhan_vien.Ho + ' ' + nhan_vien.Ten
+    except:
+        nhan_vien = request.user
+        ho_ten = nhan_vien
+    if nhan_vien != request.user:
+        luong_thang = LuongNgayNhanVien.objects.filter(NhanVien=nhan_vien,
+                                                       created_at__month=current_month).last().LuongThang
+        so_luong_lam = SoLuongLam.objects.filter(NhanVien=nhan_vien).order_by('-id')
+        # luong_ngay = LuongNgayNhanVien.objects.filter(NhanVien=nhan_vien).order_by('-id')
+        # result_list = list(chain(luong_ngay, so_luong_lam))
+    else:
+        luong_thang = 0
+        so_luong_lam = None
+        # luong_ngay = None
+        # result_list = []
+    context = {'ho_ten': ho_ten, 'nhan_vien': nhan_vien, 'luong_thang': luong_thang,
+               'so_luong_lam': so_luong_lam}
+    return render(request, 'QuyTrinhSanXuat/dt-basic.html', context)
 
 
 @login_required(login_url='/login')
@@ -72,6 +99,8 @@ def user_login(request):
                 if 'next' in request.POST:
                     return redirect(request.POST.get('next'))
                 else:
+                    if not request.user.is_staff:
+                        return redirect('/luong')
                     return redirect('/')
             else:
                 messages.error(request, "Sai tên đăng nhập hoặc mật khẩu")

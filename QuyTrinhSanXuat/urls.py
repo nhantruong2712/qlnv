@@ -13,4 +13,5 @@ urlpatterns = [
     path('duan-list/', views.duan_list, name='duan_list'),
     path('login/', views.user_login, name="login"),
     path('logout/', views.user_logout, name="logout"),
+    path('luong/', views.xem_luong, name="xem_luong"),
 ]

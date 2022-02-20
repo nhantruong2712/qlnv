@@ -6,11 +6,8 @@ from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
 from sanxuat.models import CongDoan
+from .func import thousand_format
 from .models import ChiaCongDoan, GanCongDoan, Gan, SoLuongLam, SoLuongMoiGio, LuongNgayNhanVien
-
-
-def thousand_format(value):
-    return '{0:,}'.format(round(value))
 
 
 class GanCongDoanForm(forms.ModelForm):

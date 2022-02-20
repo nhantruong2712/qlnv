@@ -45,7 +45,7 @@ class Gan(models.Model):
     GanCongDoan = models.ForeignKey(GanCongDoan, on_delete=models.CASCADE)
     NhanVien = models.ManyToManyField(NhanVien, null=True, blank=True)
     TongThoiGianCuaNhanVien = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, unique=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
     class Meta:
@@ -105,7 +105,7 @@ class SoLuongLam(models.Model):
     SoLuongDatTiepTheo = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     LuongKhiDatSoTiepTheo = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     KichCauDeTangLuong = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, unique=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
     # def __str__(self):
@@ -117,7 +117,7 @@ class LuongNgayNhanVien(models.Model):
     LuongNgayHomTruoc = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     LuongNgayHomNay = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     LuongThang = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, unique=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
     class Meta:
@@ -140,7 +140,7 @@ class SoLuongMoiGio(models.Model):
     BaDenBon = models.PositiveIntegerField(null=True, blank=True, default=0)
     BonDenNam = models.PositiveIntegerField(null=True, blank=True, default=0)
     ThemGio = models.PositiveIntegerField(null=True, blank=True, default=0)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, unique=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
     class Meta:

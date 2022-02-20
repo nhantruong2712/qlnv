@@ -1,0 +1,145 @@
+{% extends "QuyTrinhSanXuat/base.html" %}
+{% load static %}
+{% load filters %}
+
+{% block title %} Xem lương {% endblock %}
+{% block tags %}
+    <!--[if lt IE 10]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="description"
+          content="Admindek Bootstrap admin template made using Bootstrap 4 and it has huge amount of ready made feature, UI components, pages which completely fulfills any dashboard needs."/>
+    <meta name="keywords"
+          content="bootstrap, bootstrap admin template, admin theme, admin dashboard, dashboard template, admin template, responsive"/>
+    <meta name="author" content="colorlib"/>
+
+    <link rel="icon" href="https://colorlib.com/polygon/admindek/files/assets/images/favicon.ico" type="image/x-icon">
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Quicksand:500,700" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="{% static './QuyTrinhSanXuat/css/bootstrap.min.css' %}">
+
+    <link rel="stylesheet" type="text/css" href="{% static './QuyTrinhSanXuat/css/datatables.bootstrap4.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static './QuyTrinhSanXuat/css/buttons.datatables.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static './QuyTrinhSanXuat/css/responsive.bootstrap4.min.css' %}">
+
+    <link rel="stylesheet" type="text/css" href="{% static './QuyTrinhSanXuat/css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="app-main__outer" style="width: 100% !important;">
+        <div class="app-main__inner">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="card">
+                        <div class="card-header" style="display: block">
+                            <h5>Lương của {{ ho_ten }}</h5>
+                            <br>
+                            <p>Lương tháng này: {{ luong_thang | thousand_format }}</p>
+
+                        </div>
+                        <div class="card-block">
+                            <div class="dt-responsive table-responsive">
+                                <table id="simpletable" class="table table-striped table-bordered nowrap">
+                                    <thead>
+                                    <tr>
+                                        <th>Ngày làm</th>
+                                        <th>Sản phẩm</th>
+                                        <th>Tổng thời gian</th>
+                                        <th>Giá Công Đoạn</th>
+                                        <th>Số lượng tối thiểu</th>
+                                        <th>Lương ngày tối thiểu</th>
+                                        <th>Số lượng đạt tiếp theo</th>
+                                        <th>Lương khi đạt tiếp theo</th>
+                                        <th>Kích cầu để tăng lương</th>
+                                        <th>Lương</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for luong in so_luong_lam %}
+                                        <tr>
+                                            <td>{{ luong.created_at.date | date:"d/m/Y" }}</td>
+                                            <td>{{ luong.SanPham }}</td>
+                                            <td>{{ luong.TongThoiGianCuaNhanVien | thousand_format }}</td>
+                                            <td>{{ luong.GiaCongDoan | thousand_format }}</td>
+                                            <td>{{ luong.SoLuongToiThieu | thousand_format }}</td>
+                                            <td>{{ luong.LuongNgayToiThieu | thousand_format }}</td>
+                                            <td>{{ luong.SoLuongDatTiepTheo | thousand_format }}</td>
+                                            <td>{{ luong.LuongKhiDatSoTiepTheo | thousand_format }}</td>
+                                            <td>{{ luong.KichCauDeTangLuong | thousand_format}}</td>
+                                            <td>{{ luong.LuongNgay | thousand_format }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                    <tr>
+                                        <th>Ngày làm</th>
+                                        <th>Sản phẩm</th>
+                                        <th>Tổng thời gian</th>
+                                        <th>Giá Công Đoạn</th>
+                                        <th>Số lượng tối thiểu</th>
+                                        <th>Lương ngày tối thiểu</th>
+                                        <th>Số lượng đạt tiếp theo</th>
+                                        <th>Lương khi đạt tiếp theo</th>
+                                        <th>Kích cầu để tăng lương</th>
+                                        <th>Lương</th>
+                                    </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/jquery.min.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/jquery-ui.min.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/popper.min.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/bootstrap.min.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/waves.min.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/jquery.slimscroll.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/modernizr.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/css-scrollbars.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/jquery.datatables.min.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/datatables.buttons.min.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/jszip.min.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/pdfmake.min.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/vfs_fonts.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/buttons.print.min.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/buttons.html5.min.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/datatables.bootstrap4.min.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/datatables.responsive.min.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/responsive.bootstrap4.min.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/data-table-custom.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/pcoded.min.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/vertical-layout.min.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/jquery.mcustomscrollbar.concat.min.js' %}"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript" src="{% static './QuyTrinhSanXuat/js/script.js' %}"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13" type="7ab3cb0e204785e18dc50839-text/javascript"></script>
+    <script type="7ab3cb0e204785e18dc50839-text/javascript">
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-23581568-13');
+
+    </script>
+    <script src="{% static './QuyTrinhSanXuat/js/rocket-loader.min.js' %}"
+            data-cf-settings="7ab3cb0e204785e18dc50839-|49" defer=""></script>
+{% endblock %}
+
+
+
