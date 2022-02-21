@@ -13,16 +13,19 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 import os
 import dj_database_url
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-%m1if3fu&==72fz1*eea4y1ogih6z&@lu2ji1p+ll45#vvw!d1'
+SECRET_KEY = env('SECRET_KEY', default='django-insecure-%m1if3fu&==72fz1*eea4y1ogih6z&@lu2ji1p+ll45#vvw!d1')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,10 +40,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'import_export',
+
+    # Apps
     'cauhinh',
     'sanxuat',
     'QuyTrinhSanXuat.apps.QuytrinhsanxuatConfig',
+
+    # Third package
+    'import_export',
+    'celery',
+    'django_celery_beat',
+    'django_celery_results',
     # 'sortedm2m',
 ]
 
@@ -151,6 +161,20 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIR = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# Redis
+REDIS_URL = env('REDIS_URL', default='redis://localhost:6379/0')
+
+# celery
+BROKER_URL = REDIS_URL
+CELERY_BROKER_URL = REDIS_URL
+CELERY_TIMEZONE = 'Asia/Ho_Chi_Minh'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_CACHE_BACKEND = 'django-cache'
+CELERYBEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_ACCEPT_CONTENT = ['application/json']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

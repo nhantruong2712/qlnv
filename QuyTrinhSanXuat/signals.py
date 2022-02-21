@@ -2,13 +2,15 @@ from django.db.models.signals import m2m_changed, post_save, post_delete
 from django.dispatch import receiver
 from datetime import date, timedelta
 from django.db import transaction
+from django.contrib.auth.models import User
+from decimal import Decimal
 
-from . import constants
 from .models import GanCongDoan, Gan, SoLuongLam, SoLuongMoiGio, LuongNgayNhanVien
 from .utils import AssignTask
 from sanxuat.models import NhanVien
-from decimal import Decimal
-from django.contrib.auth.models import User
+from cauhinh.models import CauHinhChung
+
+cau_hinh = CauHinhChung.objects.get(id=1)
 
 
 @receiver(post_save, sender=SoLuongLam)
@@ -23,7 +25,7 @@ def tao_so_luong_lam(sender, instance, created, **kwargs):
         instance.SoLuongToiThieu = round(8 * 60 * 60 / TongThoiGianCuaNhanVien)
         instance.SoLuongDatTiepTheo = instance.SoLuongToiThieu * Decimal(20 / 100) + instance.SoLuongToiThieu
         instance.LuongNgayToiThieu = instance.SoLuongToiThieu * GiaCongDoan
-        instance.LuongKhiDatSoTiepTheo = GiaCongDoan * Decimal(instance.SoLuongDatTiepTheo) * constants.PhanTramThuong
+        instance.LuongKhiDatSoTiepTheo = GiaCongDoan * Decimal(instance.SoLuongDatTiepTheo) * cau_hinh.phantramthuong
         instance.GanCongDoan = gancongdoan
         instance.KichCauDeTangLuong = instance.SoLuongDatTiepTheo - instance.SoLuongToiThieu
         instance.save()
@@ -140,7 +142,7 @@ def update_so_luong_lam(gan_obj, nhanvien_id, cong_them):
         so_luong_lam.SoLuongDatTiepTheo = so_luong_lam.SoLuongToiThieu * Decimal(
             20 / 100) + so_luong_lam.SoLuongToiThieu
         so_luong_lam.LuongKhiDatSoTiepTheo = so_luong_lam.GiaCongDoan * Decimal(
-            so_luong_lam.SoLuongDatTiepTheo) * constants.PhanTramThuong
+            so_luong_lam.SoLuongDatTiepTheo) * cau_hinh.phantramthuong
         so_luong_lam.KichCauDeTangLuong = Decimal(
             so_luong_lam.SoLuongDatTiepTheo) - so_luong_lam.SoLuongToiThieu
         so_luong_lam.save()
